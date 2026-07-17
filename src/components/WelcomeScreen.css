@@ -1,33 +1,44 @@
-.welcome-screen {
-  height: 100vh;
-  background: #0b1020;
-  color: white;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+.welcome-screen{
+    width:100vw;
+    height:100vh;
 
-  overflow: hidden;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+
+    overflow:hidden;
+
+    background:linear-gradient(
+        180deg,
+        #8fd3ff,
+        #dff8ff
+    );
 }
 
-.robot {
-  font-size: 90px;
-  animation: breathe 2.5s ease-in-out infinite;
+.logo{
+    color:white;
+    animation:logoFloat 3s ease-in-out infinite;
+
 }
 
-.logo {
-  margin-top: 10px;
-  font-size: 60px;
-  color: #FFD700;
-  letter-spacing: 6px;
+@keyframes logoFloat{
 
-  animation: fade 1.2s ease;
+    0%,100%{
+        transform:translateY(0);
+    }
+
+    50%{
+        transform:translateY(-6px);
+    }
+
 }
 
 h2 {
-  margin-top: 12px;
-  font-weight: 400;
-  font-size: 34px;
+  margin-top:12px;
+  font-weight:400;
+  font-size:34px;
+  color:white;
 }
 
 .subtitle {
@@ -37,16 +48,22 @@ h2 {
   letter-spacing: 1px;
 }
 
-.loading-status {
-  margin-top: 35px;
-  color: #FFD24A;
-  font-size: 19px;
-  font-weight: 600;
-  letter-spacing: .5px;
-
-  animation: statusGlow 1.5s infinite alternate;
+.loading-status{
+    color:white;
+    animation:pulse 1.5s infinite;
 }
 
+@keyframes pulse{
+
+    0%,100%{
+        opacity:.5;
+    }
+
+    50%{
+        opacity:1;
+    }
+
+}
 .progress-bar {
   width: 320px;
   height: 10px;
@@ -79,21 +96,7 @@ h2 {
       0 0 22px rgba(91,216,255,.55);
 }
 
-@keyframes breathe {
 
-  0% {
-    transform: scale(1);
-  }
-
-  50% {
-    transform: scale(1.08);
-  }
-
-  100% {
-    transform: scale(1);
-  }
-
-}
 
 @keyframes fade {
 
@@ -129,4 +132,300 @@ h2 {
 
   }
 
+}
+.running-scene{
+    position:relative;
+    width:100%;
+    height:260px;
+
+    overflow:visible;
+}
+
+/* Rabbit */
+
+.rabbit-container{
+    position:absolute;
+
+    left:50%;
+    bottom:2px;
+
+    transform:translateX(-50%);
+
+    z-index:10;
+}
+.rabbit-container::after{
+
+    content:"";
+
+    position:absolute;
+
+    width:110px;
+    height:18px;
+
+    background:rgba(0,0,0,.18);
+
+    border-radius:50%;
+
+    left:50%;
+    transform:translateX(-50%);
+
+    bottom:8px;
+
+    animation:shadowHop .5s ease-in-out infinite;
+}
+
+@keyframes shadowHop{
+
+    0%,100%{
+        transform:translateX(-50%) scale(1);
+        opacity:.25;
+    }
+
+    50%{
+        transform:translateX(-50%) scale(.75);
+        opacity:.15;
+    }
+
+}
+.rabbit{
+    width:120px;
+    height:auto;
+
+    animation:hop .5s ease-in-out infinite;
+}
+
+@keyframes hop{
+
+    0%{
+        transform:translateY(0);
+    }
+
+    50%{
+        transform:translateY(-8px);
+    }
+
+    100%{
+        transform:translateY(0);
+    }
+
+}
+
+/* Grass */
+.grass{
+    position:absolute;
+    left:0;
+    bottom:0;
+
+    width:300%;
+    height:25px;
+
+    background:repeating-linear-gradient(
+        -65deg,
+        #48b84b 0 5px,
+        #5cd35b 5px 10px
+    );
+
+    animation:grassMove 1.3s linear infinite;
+
+    z-index:5;
+}
+.grass::before{
+
+    content:"";
+
+    position:absolute;
+
+    top:-6px;
+    left:0;
+
+    width:100%;
+    height:6px;
+
+    background:
+        repeating-linear-gradient(
+            90deg,
+            transparent 0 8px,
+            #5edb5a 8px 12px
+        );
+
+}
+@keyframes grassMove{
+
+    from{
+        transform:translateX(0);
+    }
+
+    to{
+        transform:translateX(-33%);
+    }
+
+}
+
+/* Clouds */
+
+.cloud{
+
+    position:absolute;
+
+    width:170px;
+    height:55px;
+
+    background:white;
+
+    opacity:.3;
+
+    border-radius:100px;
+
+}
+
+.cloud::before{
+
+    content:"";
+
+    position:absolute;
+
+    width:50px;
+    height:50px;
+
+    background:white;
+
+    border-radius:50%;
+
+    top:-20px;
+    left:20px;
+
+}
+
+.cloud1{
+
+    top:25px;
+
+    animation:cloudMove 18s linear infinite;
+
+}
+
+.cloud2{
+
+    top:70px;
+
+    animation:cloudMove 24s linear infinite;
+
+}
+/* ===== Flying Leaves ===== */
+
+.leaf{
+    position:absolute;
+    z-index:2;
+    font-size:22px;
+    opacity:.8;
+}
+
+.leaf1{
+    top:40px;
+    animation:leafMove 5s linear infinite;
+}
+
+.leaf2{
+    top:90px;
+    animation:leafMove 7s linear infinite;
+    animation-delay:1s;
+}
+
+.leaf3{
+    top:140px;
+    animation:leafMove 6s linear infinite;
+    animation-delay:2s;
+}
+
+@keyframes leafMove{
+
+    from{
+        left:110%;
+        transform:rotate(0deg);
+    }
+
+    to{
+        left:-80px;
+        transform:rotate(360deg);
+    }
+
+}
+
+@keyframes cloudMove{
+
+    from{
+        left:-150px;
+    }
+
+    to{
+        left:110%;
+    }
+
+}
+.dust{
+
+    position:absolute;
+
+    width:12px;
+    height:12px;
+
+    border-radius:50%;
+
+    background:rgba(255,255,255,.35);
+}
+
+.dust1{
+
+    left:44%;
+    bottom:55px;
+
+    animation:dustMove .8s infinite;
+}
+
+.dust2{
+
+    left:46%;
+    bottom:65px;
+
+    animation:dustMove .8s infinite .3s;
+}
+
+@keyframes dustMove{
+
+    from{
+
+        opacity:1;
+
+        transform:scale(.3);
+
+    }
+
+    to{
+
+        opacity:0;
+
+        transform:
+            translateX(-35px)
+            translateY(-10px)
+            scale(2);
+
+    }
+
+}
+.sun{
+    position:absolute;
+    top:40px;
+    right:80px;
+
+    width:120px;
+    height:120px;
+
+    border-radius:50%;
+
+    background:radial-gradient(circle,
+        rgba(255,255,255,.8) 0%,
+        rgba(255,255,255,.2) 45%,
+        transparent 75%);
+
+    filter:blur(2px);
 }

@@ -1,6 +1,6 @@
 import { useEffect,useState } from "react";
 import "./WelcomeScreen.css";
-
+import rabbit from "../assets/rabbit-logo.png";
 export default function WelcomeScreen({ onFinish }) {
   const [progress, setProgress] = useState(0);
   const [status, setStatus] = useState("Loading conversations...");
@@ -37,7 +37,30 @@ export default function WelcomeScreen({ onFinish }) {
   return (
     <div className="welcome-screen">
 
-      <div className="robot">🤖</div>
+      <div className="running-scene">
+        <div className="sun"></div>
+
+        <div className="cloud cloud1"></div>
+        <div className="cloud cloud2"></div>
+
+        <div className="leaf leaf1">🍃</div>
+        <div className="leaf leaf2">🍃</div>
+        <div className="leaf leaf3">🍃</div>
+
+        <div className="dust dust1"></div>
+        <div className="dust dust2"></div>
+
+        <div className="rabbit-container">
+          <img
+            src={rabbit}
+            alt="Milo Rabbit"
+            className="rabbit"
+          />
+        </div>
+
+        <div className="grass"></div>
+
+      </div>
 
       <h1 className="logo">
         Milo
