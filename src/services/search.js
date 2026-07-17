@@ -11,10 +11,10 @@ export async function searchWeb(query) {
         api_key: API_KEY,
         query,
         search_depth: "advanced",
-        max_results: 10,
+        max_results: 5,
         include_answer: true,
         include_images: false,
-        include_raw_content: true,
+        include_raw_content: false,
       }),
     });
 
@@ -31,9 +31,6 @@ export async function searchWeb(query) {
 
     Content:
     ${item.content}
-
-    Raw Content:
-    ${item.raw_content || ""}
 
     URL:
     ${item.url}

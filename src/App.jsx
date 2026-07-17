@@ -2,7 +2,7 @@ import WelcomeScreen from "./components/WelcomeScreen";
 import { useEffect, useMemo, useState } from "react";
 import { FiMenu } from "react-icons/fi";
 import "./App.css";
-
+import { generateChatTitle } from "./services/chatTitle";
 import CameraPanel from "./components/CameraPanel";
 import ChatWindow from "./components/ChatWindow";
 import Sidebar from "./components/Sidebar";
@@ -234,6 +234,34 @@ export default function App() {
       }
     );
   }
+  function generateTitle(firstMessage) {
+  const text = firstMessage.toLowerCase().trim();
+
+  if (/^(hi|hello|hey|hii|heyy|good morning|good afternoon|good evening)\b/.test(text)) {
+    return "👋 Greetings";
+  }
+
+  if (text.startsWith("explain ")) {
+    return firstMessage.slice(8).trim();
+  }
+
+  if (text.startsWith("what is ")) {
+    return `About ${firstMessage.slice(8).trim()}`;
+  }
+
+  if (text.startsWith("who is ")) {
+    return `About ${firstMessage.slice(7).trim()}`;
+  }
+
+  if (text.startsWith("how to ")) {
+    return `How to ${firstMessage.slice(7).trim()}`;
+  }
+
+  return firstMessage.length > 30
+    ? firstMessage.slice(0, 30) + "..."
+    : firstMessage;
+}
+
     async function sendMessage(rawText, image) {
     const text = rawText.trim();
 
@@ -249,20 +277,18 @@ export default function App() {
         ? URL.createObjectURL(image)
         : null,
     };
-
+    let title = activeChat.title;
+    if (activeChat.messages.length === 1) {
+      title = await generateChatTitle(text);
+    }
     updateChat(targetChatId, (chat) => ({
       ...chat,
-      title:
-        chat.messages.length === 1
-          ? text.slice(0, 34) +
-            (text.length > 34 ? "…" : "")
-          : chat.title,
+      title,
       messages: [
         ...chat.messages,
         userMessage,
       ],
     }));
-
     setDraft("");
     setSignWords([]);
     setIsThinking(true);

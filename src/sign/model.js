@@ -7,7 +7,7 @@ export async function createModel(numClasses = 5) {
   model = tf.sequential();
 
   model.add(tf.layers.dense({
-    inputShape: [63], // 21 landmarks × 3
+    inputShape: [63],
     units: 128,
     activation: "relu"
   }));
