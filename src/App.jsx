@@ -181,7 +181,6 @@ export default function App() {
         setActiveId(
           replacement.id
         );
-
         return [replacement];
       }
 
