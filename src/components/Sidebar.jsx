@@ -6,8 +6,9 @@ import {
   FiTrash2,
   FiX,
   FiSearch,
+  FiArchive,
 } from "react-icons/fi";
-
+import { FaThumbtack } from "react-icons/fa6";
 export default function Sidebar({
   chats,
   activeId,
@@ -17,11 +18,13 @@ export default function Sidebar({
   onNew,
   onDelete,
   onRename,
+  onPin,
+  onArchive,
 }) {
   const [editingId, setEditingId] = useState(null);
   const [title, setTitle] = useState("");
   const [search, setSearch] = useState("");
-
+  const [showArchived, setShowArchived] = useState(false);
   function beginRename(chat) {
     setEditingId(chat.id);
     setTitle(chat.title);
@@ -34,9 +37,15 @@ export default function Sidebar({
     setEditingId(null);
   }
 
-  const filteredChats = chats.filter((chat) =>
-    chat.title.toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredChats = chats
+    .filter((chat) => !chat.archived)
+    .filter((chat) =>
+      chat.title.toLowerCase().includes(search.toLowerCase())
+    )
+    .sort((a, b) => {
+      if (a.pinned === b.pinned) return 0;
+      return a.pinned ? -1 : 1;
+    });
 
   return (
     <>
@@ -104,7 +113,7 @@ export default function Sidebar({
               key={chat.id}
               className={`conversation-item ${
                 chat.id === activeId ? "active" : ""
-              }`}
+              } ${chat.pinned ? "pinned-chat" : ""}`}
             >
               <button
                 className="conversation-main"
@@ -139,6 +148,25 @@ export default function Sidebar({
               </button>
 
               <div className="conversation-actions">
+
+                <button
+                  type="button"
+                  title={chat.pinned ? "Unpin" : "Pin"}
+                  onClick={() => onPin(chat.id)}
+                >
+                  <FaThumbtack
+                    color={chat.pinned ? "#ffca58" : "#8fa3b8"}
+                  />
+                </button>
+
+                <button
+                  type="button"
+                  title={chat.archived ? "Restore" : "Archive"}
+                  onClick={() => onArchive(chat.id)}
+                >
+                  <FiArchive />
+                </button>
+
                 <button
                   type="button"
                   aria-label={`Rename ${chat.title}`}
@@ -154,11 +182,49 @@ export default function Sidebar({
                 >
                   <FiTrash2 />
                 </button>
+
               </div>
-            </div>
+             </div>
           ))}
         </nav>
+        <hr className="sidebar-divider" />
+        <button
+          className="archive-toggle"
+          onClick={() => setShowArchived(!showArchived)}
+        >
+          📦 Archived
+        </button>
+        {showArchived && (
+          <nav className="conversation-list">
+            {chats
+              .filter((chat) => chat.archived)
+              .map((chat) => (
+                <div
+                  key={chat.id}
+                  className={`conversation-item ${
+                    chat.id === activeId ? "active" : ""
+                  }`}
+                >
+                  <button
+                    className="conversation-main"
+                    onClick={() => onSelect(chat.id)}
+                  >
+                    <FiMessageSquare />
+                    <span>{chat.title}</span>
+                  </button>
 
+                  <div className="conversation-actions">
+                    <button
+                      title="Restore"
+                      onClick={() => onArchive(chat.id)}
+                    >
+                      <FiArchive />
+                    </button>
+                  </div>
+                </div>
+              ))}
+          </nav>
+        )}
         <div className="sidebar-footer">
           <div className="status-dot" />
 

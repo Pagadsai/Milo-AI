@@ -24,6 +24,8 @@ function createChat() {
   return {
     id: makeId(),
     title: "New conversation",
+    pinned: false,
+    archived: false,
     messages: [
       {
         id: makeId(),
@@ -206,6 +208,30 @@ export default function App() {
     }));
   }
 
+  function pinChat(chatId) {
+    setChats((current) =>
+      current.map((chat) =>
+        chat.id === chatId
+          ? {
+              ...chat,
+              pinned: !chat.pinned,
+            }
+          : chat
+      )
+    );
+  }
+  function archiveChat(chatId) {
+    setChats((current) =>
+      current.map((chat) =>
+        chat.id === chatId
+          ? {
+              ...chat,
+              archived: !chat.archived,
+            }
+          : chat
+      )
+    );
+  }
   function openNewTab() {
     window.open(
       "/?newChat=true",
@@ -403,7 +429,10 @@ Return ONLY the corrected sentence.`,
       <div className="app-shell">
 
         <Sidebar
-          chats={chats}
+          chats={[...chats].sort((a, b) => {
+            if (a.pinned === b.pinned) return 0;
+            return a.pinned ? -1 : 1;
+          })}
           activeId={activeChat.id}
           isOpen={sidebarOpen}
           onClose={() => setSidebarOpen(false)}
@@ -414,6 +443,8 @@ Return ONLY the corrected sentence.`,
           onNew={startNewChat}
           onDelete={deleteChat}
           onRename={renameChat}
+          onPin={pinChat}
+          onArchive={archiveChat}
         />
 
         <main className="workspace">
