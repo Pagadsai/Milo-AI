@@ -1,4 +1,5 @@
 import { useState } from "react";
+import rabbitLogo from "../assets/rabbit-logo.png";
 import {
   FiEdit2,
   FiMessageSquare,
@@ -65,7 +66,7 @@ export default function Sidebar({
             onClick={onNew}
           >
             <img
-              src="/rabbit-logo.png"
+              src={rabbitLogo}
               alt="Milo"
               className="rabbit-logo"
             />

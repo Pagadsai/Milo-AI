@@ -6,7 +6,6 @@ import { generateChatTitle } from "./services/chatTitle";
 import CameraPanel from "./components/CameraPanel";
 import ChatWindow from "./components/ChatWindow";
 import Sidebar from "./components/Sidebar";
-
 import { speak } from "./services/milo";
 import { askMilo } from "./services/brain";
 import { generateResponse } from "./services/openrouter";

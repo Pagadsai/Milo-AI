@@ -15,7 +15,6 @@ export default function ChatInput({
           background: "#111827",
         }}
       >
-        {/* Voice Button */}
         <button
           onClick={startListening}
           style={{
@@ -31,7 +30,6 @@ export default function ChatInput({
           {listening ? "🎙️" : "🎤"}
         </button>
   
-        {/* Input */}
         <input
           type="text"
           placeholder="Ask Milo anything..."
@@ -52,7 +50,6 @@ export default function ChatInput({
           }}
         />
   
-        {/* Send Button */}
         <button
           onClick={sendMessage}
           style={{
