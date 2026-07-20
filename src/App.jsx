@@ -45,7 +45,6 @@ function loadChats() {
     const saved = JSON.parse(
       localStorage.getItem(STORAGE_KEY) || "null"
     );
-
     return Array.isArray(saved) && saved.length
       ? saved
       : [createChat()];
@@ -56,23 +55,17 @@ function loadChats() {
 
 export default function App() {
   const [chats, setChats] = useState(loadChats);
-
   const [activeId, setActiveId] = useState(
     () => loadChats()[0].id
   );
   const [theme, setTheme] = useState("dark");
   const [draft, setDraft] = useState("");
-
   const [signWords, setSignWords] = useState([]);
-
   const [autoSpeak, setAutoSpeak] = useState(true);
-
   const [sidebarOpen, setSidebarOpen] =
     useState(false);
-
   const [showWelcome, setShowWelcome] =
     useState(true);
-
   const activeChat = useMemo(
     () =>
       chats.find(
@@ -497,6 +490,7 @@ Return ONLY the corrected sentence.`,
                 aria-hidden="true"
               >
                 M
+
               </div>
 
               <div>
