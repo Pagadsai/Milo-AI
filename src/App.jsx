@@ -1,6 +1,10 @@
 import WelcomeScreen from "./components/WelcomeScreen";
 import { useEffect, useMemo, useState } from "react";
-import { FiMenu } from "react-icons/fi";
+import {
+  FiMenu,
+  FiSun,
+  FiMoon,
+} from "react-icons/fi";
 import "./App.css";
 import { generateChatTitle } from "./services/chatTitle";
 import CameraPanel from "./components/CameraPanel";
@@ -25,6 +29,7 @@ function createChat() {
     title: "New conversation",
     pinned: false,
     archived: false,
+    isThinking: false,
     messages: [
       {
         id: makeId(),
@@ -55,12 +60,10 @@ export default function App() {
   const [activeId, setActiveId] = useState(
     () => loadChats()[0].id
   );
-
+  const [theme, setTheme] = useState("dark");
   const [draft, setDraft] = useState("");
 
   const [signWords, setSignWords] = useState([]);
-
-  const [isThinking, setIsThinking] = useState(false);
 
   const [autoSpeak, setAutoSpeak] = useState(true);
 
@@ -139,6 +142,22 @@ export default function App() {
       }
     }
   }, []);
+  useEffect(() => {
+    document.body.setAttribute(
+      "data-theme",
+      theme
+    );
+  }, [theme]);
+
+  function updateChat(chatId, update) {
+    setChats((current) =>
+      current.map((chat) =>
+        chat.id === chatId
+          ? update(chat)
+          : chat
+      )
+    );
+  }
 
   function updateChat(chatId, update) {
     setChats((current) =>
@@ -288,10 +307,11 @@ export default function App() {
 
     async function sendMessage(rawText, image) {
     const text = rawText.trim();
-
-    if (!text || isThinking) return;
-
     const targetChatId = activeChat.id;
+    const currentChat = chats.find(
+      chat => chat.id === targetChatId
+    );
+    if (!text || currentChat?.isThinking) return;
 
     const userMessage = {
       id: makeId(),
@@ -301,8 +321,8 @@ export default function App() {
         ? URL.createObjectURL(image)
         : null,
     };
-    let title = activeChat.title;
-    if (activeChat.messages.length === 1) {
+    let title = currentChat.title;
+    if (currentChat.messages.length === 1) {
       title = await generateChatTitle(text);
     }
     updateChat(targetChatId, (chat) => ({
@@ -315,7 +335,10 @@ export default function App() {
     }));
     setDraft("");
     setSignWords([]);
-    setIsThinking(true);
+    updateChat(targetChatId, (chat) => ({
+      ...chat,
+      isThinking: true,
+    }));
 
     try {
       let imageData = null;
@@ -326,7 +349,7 @@ export default function App() {
       }
 
       const conversation = [
-        ...activeChat.messages,
+        ...(currentChat?.messages || []),
         userMessage,
       ];
 
@@ -347,6 +370,7 @@ export default function App() {
             text: reply,
           },
         ],
+        isThinking: false,
       }));
 
       if (autoSpeak) {
@@ -357,19 +381,17 @@ export default function App() {
 
       updateChat(targetChatId, (chat) => ({
         ...chat,
+        isThinking: false,
         messages: [
           ...chat.messages,
           {
             id: makeId(),
             sender: "milo",
-            text:
-              "Sorry, something went wrong.",
+            text: "Sorry, something went wrong.",
           },
         ],
       }));
-    } finally {
-      setIsThinking(false);
-    }
+    } 
   }
 
   function addDetectedSign(word) {
@@ -411,7 +433,7 @@ Return ONLY the corrected sentence.`,
           .join(" ")
       );
     }
-  }
+  }updateChat
 
   if (showWelcome) {
     return (
@@ -486,23 +508,50 @@ Return ONLY the corrected sentence.`,
 
             </div>
 
-            <label className="speak-toggle">
+            <div className="topbar-actions">
 
-              <input
-                type="checkbox"
-                checked={autoSpeak}
-                onChange={(e) =>
-                  setAutoSpeak(
-                    e.target.checked
+              <button
+                className="theme-toggle"
+                type="button"
+                onClick={() =>
+                  setTheme(
+                    theme === "dark"
+                      ? "light"
+                      : "dark"
                   )
                 }
-              />
+                title={
+                  theme === "dark"
+                    ? "Switch to Light Mode"
+                    : "Switch to Dark Mode"
+                }
+              >
+                {theme === "dark" ? (
+                  <FiSun />
+                ) : (
+                  <FiMoon />
+                )}
+              </button>
 
-              <span>
-                Read replies aloud
-              </span>
+  <label className="speak-toggle">
 
-            </label>
+    <input
+      type="checkbox"
+      checked={autoSpeak}
+      onChange={(e) =>
+        setAutoSpeak(
+          e.target.checked
+        )
+      }
+    />
+
+    <span>
+      Read replies aloud
+    </span>
+
+  </label>
+
+</div>
 
           </header>
 
@@ -511,7 +560,7 @@ Return ONLY the corrected sentence.`,
             <ChatWindow
               messages={activeChat.messages}
               draft={draft}
-              isThinking={isThinking}
+              isThinking={activeChat.isThinking}
               onDraftChange={setDraft}
               onSend={sendMessage}
             />

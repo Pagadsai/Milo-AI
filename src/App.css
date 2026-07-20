@@ -1,21 +1,46 @@
 :root {
-  --navy-950: #08111d;
-  --navy-900: #0b1624;
-  --navy-850: #0e1b2b;
-  --navy-800: #122136;
-  --line: rgba(157,180,204,.14);
-  --muted:#8fa3b8;
-  --text:#e9f0f7;
+  --bg: #08111d;
+  --surface: #0b1624;
+  --surface-2: #122136;
+  --surface-hover: #1a2b42;
+
+  --text: #e9f0f7;
+  --muted: #8fa3b8;
+  --border: rgba(157,180,204,.14);
+
+  --yellow: #ffca58;
+  --yellow-strong: #f7b92f;
+  --mint: #9af7d1;
+}
+
+body[data-theme="light"]{
+  --bg:#f6f8fc;
+
+  --surface:#ffffff;
+
+  --surface-2:#eef2f8;
+
+  --surface-hover:#e8edf5;
+
+  --text:#1f2937;
+
+  --muted:#6b7280;
+
+  --border:#d7dee8;
+
   --yellow:#ffca58;
+
   --yellow-strong:#f7b92f;
-  --mint:#9af7d1;
+
+  --mint:#34d399;
 }
 .app-shell{
   display:flex;
   width:100vw;
   height:100vh;
   overflow:hidden;
-  background:var(--navy-950);
+  background:var(--bg);
+  color:var(--text);
 }
 .sidebar{
   width:292px;
@@ -23,7 +48,7 @@
   display:flex;
   flex-direction:column;
   padding:28px 18px 20px;
-  background:#0a1421;
+  background:var(--surface);
   border-right:1px solid var(--line);
   z-index:20;
 }
@@ -52,7 +77,7 @@
 }
 
 .brand-name{
-  color:white;
+  color:var(--text);
   font-size:36px;
   font-weight:800;
   letter-spacing:5px;
@@ -66,7 +91,7 @@
   margin:16px 0 14px;
   padding:10px 14px;
   border-radius:12px;
-  background:#101b2d;
+  background:var(--surface-2);
   border:1px solid rgba(255,255,255,.08);
 }
 
@@ -80,7 +105,7 @@
   border:none;
   outline:none;
   background:transparent;
-  color:white;
+  color:var(--text);
   font-size:14px;
 }
 
@@ -104,6 +129,7 @@
   font-size:20px;
   letter-spacing:-.03em;
   font-family:"Manrope",sans-serif;
+  color:var(--text);
 }
 
 .icon-button{
@@ -197,7 +223,7 @@
 
 .conversation-item.active
 .conversation-main{
-  color:white;
+  color:var(--text);
 }
 
 .conversation-main span{
@@ -249,7 +275,7 @@
 }
 
 .conversation-actions button:hover{
-  color:white;
+  color:var(--text);
   background:
       rgba(255,255,255,.08);
 }
@@ -287,7 +313,8 @@
 }
 
 .sidebar-footer strong{
-  font-size:13px;
+    font-size:13px;
+    color:var(--text);
 }
 
 .sidebar-footer span{
@@ -310,7 +337,7 @@
   justify-content:space-between;
   flex:0 0 82px;
   padding:0 28px;
-  background:rgba(10,20,33,.82);
+  background:var(--surface);
   border-bottom:1px solid var(--line);
   backdrop-filter:blur(20px);
 }
@@ -346,6 +373,7 @@
 }
 
 .topbar h1{
+  color:var(--text);
   margin:0;
   font-family:"Manrope",sans-serif;
   font-size:22px;
@@ -353,6 +381,7 @@
 }
 
 .topbar p{
+  color:var(--muted);
   margin:2px 0 0;
   color:var(--muted);
   font-size:12px;
@@ -393,7 +422,7 @@
           rgba(27,51,79,.2),
           transparent 36%
       ),
-      var(--navy-950);
+      var(--bg)
 }
 
 .messages{
@@ -439,8 +468,8 @@
 
 .message-bubble{
   padding:13px 16px;
-  color:#dbe6f1;
-  background:#101e30;
+  color:var(--text);
+  background:var(--surface-2);
   border:1px solid var(--line);
   border-radius:5px 16px 16px 16px;
   font-size:14px;
@@ -523,7 +552,7 @@
   padding:8px;
   border-radius:16px;
   border:1px solid rgba(164,185,208,.18);
-  background:#0f1d2e;
+  background:var(--surface-2);
   box-shadow:
       0 18px 50px
       rgba(0,0,0,.15);
@@ -535,7 +564,7 @@
   max-height:120px;
   resize:vertical;
   padding:10px 8px;
-  color:white;
+  color:var(--text);
   border:0;
   outline:0;
   background:transparent;
@@ -565,7 +594,7 @@
 }
 
 .composer-action:hover{
-  color:white;
+  color:var(--text);
   background:
       rgba(255,255,255,.06);
 }
@@ -602,7 +631,7 @@
   min-width:0;
   padding:24px;
   overflow-y:auto;
-  background:var(--navy-900);
+  background:var(--surface);
   border-left:1px solid var(--line);
 }
 
@@ -641,13 +670,13 @@
 }
 
 .camera-stage{
-  position:relative;
-  aspect-ratio:4/3;
-  margin-top:20px;
-  overflow:hidden;
-  border-radius:18px;
-  border:1px solid var(--line);
-  background:#07101b;
+    position:relative;
+    aspect-ratio:4/3;
+    margin-top:20px;
+    overflow:hidden;
+    border-radius:18px;
+    border:1px solid var(--border);
+    background:var(--bg);
 }
 
 .camera-stage.live{
@@ -700,6 +729,7 @@
 
 .camera-placeholder strong{
   font-family:"Manrope",sans-serif;
+  color:var(--text);
 }
 
 .camera-placeholder p{
@@ -799,18 +829,18 @@
 }
 
 .sign-transcript{
-  min-height:62px;
-  margin:12px 0;
-  padding:13px;
-  border-radius:10px;
-  background:#091422;
-  color:#60758a;
-  font-size:12px;
-  line-height:1.5;
+    min-height:62px;
+    margin:12px 0;
+    padding:13px;
+    border-radius:10px;
+    background:var(--surface-2);
+    color:var(--muted);
+    font-size:12px;
+    line-height:1.5;
 }
 
 .sign-transcript.has-words{
-  color:white;
+  color:var(--text);
   font-size:14px;
   font-weight:700;
 }
@@ -1043,4 +1073,29 @@
 
 .archive-toggle:hover{
     background:#14243a;
+}
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.theme-toggle {
+  width: 42px;
+  height: 42px;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 18px;
+  transition: all 0.25s ease;
+}
+
+.theme-toggle:hover {
+  transform: rotate(20deg);
+  background: var(--surface-hover);
 }
