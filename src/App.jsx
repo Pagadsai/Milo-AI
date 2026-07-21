@@ -58,7 +58,9 @@ export default function App() {
   const [activeId, setActiveId] = useState(
     () => loadChats()[0].id
   );
-  const [theme, setTheme] = useState("dark");
+  const [theme, setTheme] = useState(() => {
+    return localStorage.getItem("theme") || "light";
+  });
   const [draft, setDraft] = useState("");
   const [signWords, setSignWords] = useState([]);
   const [autoSpeak, setAutoSpeak] = useState(true);
@@ -136,21 +138,9 @@ export default function App() {
     }
   }, []);
   useEffect(() => {
-    document.body.setAttribute(
-      "data-theme",
-      theme
-    );
+    document.body.setAttribute("data-theme", theme);
+    localStorage.setItem("theme", theme);
   }, [theme]);
-
-  function updateChat(chatId, update) {
-    setChats((current) =>
-      current.map((chat) =>
-        chat.id === chatId
-          ? update(chat)
-          : chat
-      )
-    );
-  }
 
   function updateChat(chatId, update) {
     setChats((current) =>
@@ -426,7 +416,7 @@ Return ONLY the corrected sentence.`,
           .join(" ")
       );
     }
-  }updateChat
+  }
 
   if (showWelcome) {
     return (

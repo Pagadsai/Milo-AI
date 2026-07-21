@@ -77,11 +77,15 @@ body[data-theme="light"]{
 }
 
 .brand-name{
-  color:var(--text);
-  font-size:36px;
-  font-weight:800;
-  letter-spacing:5px;
-  font-family:"Manrope",sans-serif;
+    color:#ffffff;
+    font-size:36px;
+    font-weight:800;
+    letter-spacing:5px;
+    font-family:"Manrope",sans-serif;
+}
+
+body[data-theme="light"] .brand-name{
+    color:#111827;
 }
 
 .sidebar-search{
@@ -208,17 +212,25 @@ body[data-theme="light"]{
 }
 
 .conversation-main{
-  flex:1;
-  min-width:0;
-  display:flex;
-  align-items:center;
-  gap:10px;
-  padding:13px 12px;
-  border:0;
-  background:transparent;
-  color:#b7c5d4;
-  cursor:pointer;
-  text-align:left;
+    flex:1;
+    min-width:0;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:13px 12px;
+    border:0;
+    background:transparent;
+    color:var(--muted);
+    cursor:pointer;
+    text-align:left;
+}
+body[data-theme="light"] .conversation-main{
+    color:#374151;
+}
+
+body[data-theme="light"] .conversation-item.active .conversation-main{
+    color:#111827;
+    font-weight:600;
 }
 
 .conversation-item.active
@@ -1098,4 +1110,37 @@ body[data-theme="light"]{
 .theme-toggle:hover {
   transform: rotate(20deg);
   background: var(--surface-hover);
+}
+body[data-theme="light"] .sidebar{
+    background:#f8fafc;
+}
+body[data-theme="light"] .conversation-item.active{
+    background:#dbeafe;
+    border:1px solid #93c5fd;
+}
+
+body[data-theme="light"] .conversation-item:hover{
+    background:#eef4fb;
+}
+body[data-theme="light"] .conversation-item.active .conversation-main{
+    color:#111827 !important;
+}
+
+body[data-theme="light"] .conversation-main{
+    color:#374151;
+}
+body[data-theme="light"] .rabbit-logo{
+    filter: brightness(0);
+}
+body[data-theme="light"] .sidebar-search{
+    border:1px solid #d1d5db;
+    background:#ffffff;
+}
+body[data-theme="light"] .composer{
+    background:#f8fafc;
+}
+
+body[data-theme="light"] .composer-box{
+    background:#ffffff;
+    border:1px solid #d1d5db;
 }
