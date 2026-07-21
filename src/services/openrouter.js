@@ -5,15 +5,21 @@ const API_URL = "https://openrouter.ai/api/v1/chat/completions";
 export async function generateResponse(
   conversation,
   image = null,
-  webResults = ""
-) {
+  webResults = "",
+  documents = []
+){
   try {
     const formattedMessages = conversation.map((msg, index) => {
       const isLastUser =
         msg.sender === "user" &&
         index === conversation.length - 1;
 
-      if (image && isLastUser) {
+      const isImage =
+        image &&
+        typeof image === "string" &&
+        image.startsWith("data:image");
+
+      if (isImage && isLastUser) {
         return {
           role: "user",
           content: [
@@ -36,8 +42,24 @@ export async function generateResponse(
         content: msg.text,
       };
     });
-
-    const response = await fetch(API_URL, {
+    let documentContext = "";
+    if (documents.length) {
+      documentContext =
+        documents
+          .map(
+            (doc) => `
+    Document Name:
+    ${doc.name}
+    Document Content:
+    ${doc.text}
+    `
+          )
+          .join("\n\n----------------------\n\n");
+    }
+    console.log("===== DOCUMENT CONTEXT =====");
+    console.log(documentContext);
+    console.log("============================");
+    const response = await fetch(API_URL, { 
       method: "POST",
 
       headers: {
@@ -88,6 +110,17 @@ export async function generateResponse(
         Web Search Results:
 
         ${webResults}
+
+        Uploaded Documents:
+
+        ${documentContext}
+
+        Rules for uploaded documents:
+
+        - If uploaded documents are available, use them as your primary source.
+        - Answer questions using the uploaded document whenever possible.
+        - If the answer is not found in the uploaded document, use your general knowledge or web results.
+        - Never invent information that is not present in the uploaded document.
         `,
           },
           ...formattedMessages,
@@ -97,10 +130,16 @@ export async function generateResponse(
 
     const data = await response.json();
 
-    console.log("OpenRouter:", data);
+    console.log("Status:", response.status);
+    console.log("OpenRouter Response:", data);
 
     if (!response.ok) {
-      console.error(data);
+      console.error("Full Error:", data);
+      if (data.error) {
+        console.error("Error Message:", data.error.message);
+        console.error("Error Code:", data.error.code);
+        console.error("Metadata:", data.error.metadata);
+      }
       return data.error?.message || "API Error";
     }
 

@@ -13,6 +13,7 @@ import Sidebar from "./components/Sidebar";
 import { speak } from "./services/milo";
 import { askMilo } from "./services/brain";
 import { generateResponse } from "./services/openrouter";
+import { extractDocumentText } from "./services/documentParser";
 
 const STORAGE_KEY = "milo_chats_v2";
 
@@ -30,6 +31,7 @@ function createChat() {
     pinned: false,
     archived: false,
     isThinking: false,
+    documents: [],
     messages: [
       {
         id: makeId(),
@@ -287,95 +289,128 @@ export default function App() {
     ? firstMessage.slice(0, 30) + "..."
     : firstMessage;
 }
+async function sendMessage(rawText, image) {
+  const text = rawText.trim();
+  const targetChatId = activeChat.id;
 
-    async function sendMessage(rawText, image) {
-    const text = rawText.trim();
-    const targetChatId = activeChat.id;
-    const currentChat = chats.find(
-      chat => chat.id === targetChatId
-    );
-    if (!text || currentChat?.isThinking) return;
+  const currentChat = chats.find(
+    (chat) => chat.id === targetChatId
+  );
 
-    const userMessage = {
-      id: makeId(),
-      sender: "user",
-      text,
-      image: image
+  if (!text || currentChat?.isThinking) return;
+
+  const userMessage = {
+    id: makeId(),
+    sender: "user",
+    text,
+    image:
+      image && image.type.startsWith("image/")
         ? URL.createObjectURL(image)
         : null,
-    };
-    let title = currentChat.title;
-    if (currentChat.messages.length === 1) {
-      title = await generateChatTitle(text);
+    file: image
+      ? {
+          name: image.name,
+          type: image.type,
+          size: image.size,
+        }
+      : null,
+  };
+
+  let extractedDocument = null;
+
+  if (image && !image.type.startsWith("image/")) {
+    const extractedText = await extractDocumentText(image);
+
+    if (extractedText) {
+      extractedDocument = {
+        id: makeId(),
+        name: image.name,
+        text: extractedText,
+      };
     }
+  }
+
+  const updatedDocuments = extractedDocument
+    ? [
+        ...(currentChat.documents || []),
+        extractedDocument,
+      ]
+    : currentChat.documents || [];
+
+  let title = currentChat.title;
+
+  if (currentChat.messages.length === 1) {
+    title = await generateChatTitle(text);
+  }
+
+  updateChat(targetChatId, (chat) => ({
+    ...chat,
+    title,
+    documents: updatedDocuments,
+    messages: [...chat.messages, userMessage],
+  }));
+
+  setDraft("");
+  setSignWords([]);
+
+  updateChat(targetChatId, (chat) => ({
+    ...chat,
+    isThinking: true,
+  }));
+
+  try {
+    let imageData = null;
+
+    if (image && image.type.startsWith("image/")) {
+      imageData = await fileToBase64(image);
+    }
+
+    const conversation = [
+      ...(currentChat.messages || []),
+      userMessage,
+    ];
+
+    const reply = await askMilo(
+      {
+        messages: conversation,
+        documents: updatedDocuments,
+      },
+      imageData
+    );
+
     updateChat(targetChatId, (chat) => ({
       ...chat,
-      title,
+      isThinking: false,
       messages: [
         ...chat.messages,
-        userMessage,
+        {
+          id: makeId(),
+          sender: "milo",
+          text: reply,
+        },
       ],
     }));
-    setDraft("");
-    setSignWords([]);
+
+    if (autoSpeak) {
+      speak(reply);
+    }
+  } catch (err) {
+    console.error(err);
+
     updateChat(targetChatId, (chat) => ({
       ...chat,
-      isThinking: true,
-    }));
-
-    try {
-      let imageData = null;
-
-      if (image) {
-        imageData =
-          await fileToBase64(image);
-      }
-
-      const conversation = [
-        ...(currentChat?.messages || []),
-        userMessage,
-      ];
-
-      const reply = await askMilo(
+      isThinking: false,
+      messages: [
+        ...chat.messages,
         {
-          messages: conversation,
+          id: makeId(),
+          sender: "milo",
+          text: "Sorry, something went wrong.",
         },
-        imageData
-      );
-
-      updateChat(targetChatId, (chat) => ({
-        ...chat,
-        messages: [
-          ...chat.messages,
-          {
-            id: makeId(),
-            sender: "milo",
-            text: reply,
-          },
-        ],
-        isThinking: false,
-      }));
-
-      if (autoSpeak) {
-        speak(reply);
-      }
-    } catch (err) {
-      console.error(err);
-
-      updateChat(targetChatId, (chat) => ({
-        ...chat,
-        isThinking: false,
-        messages: [
-          ...chat.messages,
-          {
-            id: makeId(),
-            sender: "milo",
-            text: "Sorry, something went wrong.",
-          },
-        ],
-      }));
-    } 
+      ],
+    }));
   }
+}
 
   function addDetectedSign(word) {
     setSignWords((current) => [

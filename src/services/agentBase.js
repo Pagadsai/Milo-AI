@@ -26,6 +26,7 @@ export async function runAgent({
   return await generateResponse(
     conversation,
     image,
-    webResults
+    webResults,
+    chat.documents || []
   );
 }

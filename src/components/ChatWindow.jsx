@@ -18,6 +18,7 @@ export default function ChatWindow({
   const [isListening, setIsListening] = useState(false);
   const [voiceError, setVoiceError] = useState("");
   const [selectedImage, setSelectedImage] = useState(null);
+  const [dragging, setDragging] = useState(false);
   useEffect(() => {
     bottomRef.current?.scrollIntoView({
       behavior: "smooth",
@@ -72,6 +73,43 @@ export default function ChatWindow({
     if (!file) return;
     setSelectedImage(file);
   }
+  function handleDragOver(e) {
+    e.preventDefault();
+    setDragging(true);
+  }
+
+  function handleDragLeave(e) {
+    e.preventDefault();
+    setDragging(false);
+  }
+
+  function handleDrop(e) {
+    e.preventDefault();
+    setDragging(false);
+
+    const file = e.dataTransfer.files[0];
+
+    if (!file) return;
+
+    const allowed = [
+      "application/pdf",
+      "application/vnd.ms-powerpoint",
+      "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+      "application/msword",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "text/plain",
+    ];
+
+    if (
+      !file.type.startsWith("image/") &&
+      !allowed.includes(file.type)
+    ) {
+      alert("Unsupported file type.");
+      return;
+    }
+
+    setSelectedImage(file);
+  }
   function submit(event) {
     event.preventDefault();
     onSend(draft, selectedImage);
@@ -79,8 +117,11 @@ export default function ChatWindow({
   }
   return (
     <section
-      className="chat-panel"
+      className={`chat-panel ${dragging ? "dragging" : ""}`}
       aria-label="Conversation with Milo"
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
     >
       <div
         className="messages"
@@ -103,14 +144,37 @@ export default function ChatWindow({
               </div>
             )}
             <div className="message-bubble">
+              {message.file && (
+                <div className="uploaded-file-card">
+                  <span className="file-icon">
+                    {message.file.type.startsWith("image/")
+                      ? "🖼️"
+                      : message.file.type.includes("pdf")
+                      ? "📕"
+                      : message.file.type.includes("presentation")
+                      ? "📊"
+                      : message.file.type.includes("word")
+                      ? "📝"
+                      : "📄"}
+                  </span>
+
+                  <div className="file-details">
+                    <div className="file-name">{message.file.name}</div>
+
+                    <div className="file-size">
+                      {(message.file.size / 1024).toFixed(1)} KB
+                    </div>
+                  </div>
+                </div>
+              )}
               {message.image && (
                 <img
                   src={message.image}
-                  alt="Uploaded"
+                  alt=""
                   className="chat-image"
                 />
               )}
-              {message.text}
+              <div>{message.text}</div>
             </div>
           </article>
         ))}
@@ -142,13 +206,30 @@ export default function ChatWindow({
         )}
         {selectedImage && (
           <div className="image-preview">
-            🖼 {selectedImage.name}
+            {selectedImage.type.startsWith("image/") ? (
+              <img
+                src={URL.createObjectURL(selectedImage)}
+                alt="Preview"
+                className="preview-thumb"
+              />
+            ) : (
+              <div className="file-preview-icon">
+                {selectedImage.type.includes("pdf")
+                  ? "📕"
+                  : selectedImage.type.includes("presentation")
+                  ? "📊"
+                  : selectedImage.type.includes("word")
+                  ? "📝"
+                  : "📄"}
+              </div>
+            )}
+
+            <span>{selectedImage.name}</span>
+
             <button
               type="button"
               className="remove-image"
-              onClick={() =>
-                setSelectedImage(null)
-              }
+              onClick={() => setSelectedImage(null)}
             >
               <FiX />
             </button>
@@ -160,7 +241,8 @@ export default function ChatWindow({
             <input
               type="file"
               hidden
-              accept="image/*"
+              multiple
+              accept="image/*,.pdf,.doc,.docx,.ppt,.pptx,.txt,.xlsx,.xls,.csv"
               onChange={chooseImage}
             />
           </label>
