@@ -130,7 +130,6 @@ async function extractExcel(file) {
   });
 
   let output = "";
-
   workbook.SheetNames.forEach((sheetName) => {
     output += `\n\n===== SHEET: ${sheetName} =====\n\n`;
 
