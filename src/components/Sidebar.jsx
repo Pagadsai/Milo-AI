@@ -58,7 +58,7 @@ export default function Sidebar({
         />
       )}
 
-      <aside className={`sidebar ${isOpen ? "open" : ""}`}>
+      <aside className={`sidebar ${isOpen ? "open" : "closed"}`}>
         <div className="sidebar-heading">
           <button
             className="sidebar-brand"

@@ -13,12 +13,10 @@ export async function generateResponse(
       const isLastUser =
         msg.sender === "user" &&
         index === conversation.length - 1;
-
       const isImage =
         image &&
         typeof image === "string" &&
         image.startsWith("data:image");
-
       if (isImage && isLastUser) {
         return {
           role: "user",
@@ -36,7 +34,6 @@ export async function generateResponse(
           ],
         };
       }
-
       return {
         role: msg.sender === "user" ? "user" : "assistant",
         content: msg.text,
@@ -61,17 +58,13 @@ export async function generateResponse(
     console.log("============================");
     const response = await fetch(API_URL, { 
       method: "POST",
-
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${API_KEY}`,
       },
-
       body: JSON.stringify({
         model: "openai/gpt-4o-mini",
-
         temperature: 0.2,
-
         messages: [
           {
             role: "system",
@@ -127,12 +120,9 @@ export async function generateResponse(
         ],
       }),
     });
-
     const data = await response.json();
-
     console.log("Status:", response.status);
     console.log("OpenRouter Response:", data);
-
     if (!response.ok) {
       console.error("Full Error:", data);
       if (data.error) {
@@ -142,7 +132,6 @@ export async function generateResponse(
       }
       return data.error?.message || "API Error";
     }
-
     return (
       data?.choices?.[0]?.message?.content ||
       "Sorry, I couldn't generate a response."
@@ -156,7 +145,6 @@ export async function improveSearchQuery(query) {
   try {
     const response = await fetch(API_URL, {
       method: "POST",
-
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${API_KEY}`,
@@ -188,9 +176,7 @@ Rules:
         ],
       }),
     });
-
     const data = await response.json();
-
     return (
       data?.choices?.[0]?.message?.content?.trim() ||
       query

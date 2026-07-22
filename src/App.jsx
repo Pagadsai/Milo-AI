@@ -14,6 +14,7 @@ import { speak } from "./services/milo";
 import { askMilo } from "./services/brain";
 import { generateResponse } from "./services/openrouter";
 import { extractDocumentText } from "./services/documentParser";
+import { FiPlus } from "react-icons/fi";
 
 const STORAGE_KEY = "milo_chats_v2";
 
@@ -67,7 +68,7 @@ export default function App() {
   const [signWords, setSignWords] = useState([]);
   const [autoSpeak, setAutoSpeak] = useState(true);
   const [sidebarOpen, setSidebarOpen] =
-    useState(false);
+    useState(true);
   const [showWelcome, setShowWelcome] =
     useState(true);
   const activeChat = useMemo(
@@ -156,19 +157,13 @@ export default function App() {
 
   function startNewChat() {
     const chat = createChat();
-
     setChats((current) => [
       chat,
       ...current,
     ]);
-
     setActiveId(chat.id);
-
     setDraft("");
-
     setSignWords([]);
-
-    setSidebarOpen(false);
   }
 
   function deleteChat(chatId) {
@@ -194,7 +189,6 @@ export default function App() {
           remaining[0].id
         );
       }
-
       return remaining;
     });
   }
@@ -493,38 +487,36 @@ Return ONLY the corrected sentence.`,
             <div className="brand-row">
 
               <button
-                className="icon-button menu-button"
-                type="button"
-                aria-label="Open conversations"
-                onClick={() => setSidebarOpen(true)}
+                  className="icon-button menu-button"
+                  onClick={() => setSidebarOpen(!sidebarOpen)}
               >
-                <FiMenu />
+                  <FiMenu />
               </button>
 
               <button
-                className="icon-button"
-                type="button"
-                onClick={openNewTab}
-                title="Open in new tab"
+                  className="icon-button"
+                  title="New conversation"
+                  onClick={startNewChat}
               >
-                ↗
+                  <FiPlus />
               </button>
 
-              <div
-                className="milo-mark"
-                aria-hidden="true"
+              <button
+                  className="icon-button"
+                  onClick={openNewTab}
               >
-                M
+                  ↗
+              </button>
 
+              <div className="milo-mark">
+                  M
               </div>
-
               <div>
                 <h1>Milo</h1>
                 <p>
                   AI sign-language companion
                 </p>
               </div>
-
             </div>
 
             <div className="topbar-actions">
