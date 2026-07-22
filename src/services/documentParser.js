@@ -41,7 +41,7 @@ export async function extractDocumentText(file) {
   }
 }
 
-/* ---------------- PDF ---------------- */
+/* --- PDF --- */
 
 async function extractPDF(file) {
   const buffer = await file.arrayBuffer();
@@ -67,7 +67,7 @@ async function extractPDF(file) {
   return output;
 }
 
-/* ---------------- DOCX ---------------- */
+/* --- DOCX --- */
 
 async function extractDOCX(file) {
   const buffer = await file.arrayBuffer();
@@ -79,7 +79,7 @@ async function extractDOCX(file) {
   return result.value;
 }
 
-/* ---------------- PPTX ---------------- */
+/* --- PPTX --- */
 
 async function extractPPTX(file) {
   const buffer = await file.arrayBuffer();
@@ -120,7 +120,7 @@ async function extractPPTX(file) {
   return output;
 }
 
-/* ---------------- EXCEL ---------------- */
+/* --- EXCEL --- */
 
 async function extractExcel(file) {
   const buffer = await file.arrayBuffer();
