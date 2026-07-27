@@ -5,6 +5,7 @@ import {
   FiSquare,
   FiPaperclip,
   FiX,
+  FiEdit2,
 } from "react-icons/fi";
 export default function ChatWindow({
   messages,
@@ -12,7 +13,10 @@ export default function ChatWindow({
   isThinking,
   onDraftChange,
   onSend,
-}) {
+  onEditMessage,
+}){
+  const [editingId, setEditingId] = useState(null);
+  const [editedText, setEditedText] = useState("");
   const bottomRef = useRef(null);
   const recognitionRef = useRef(null);
   const [isListening, setIsListening] = useState(false);
@@ -143,38 +147,83 @@ export default function ChatWindow({
                 M
               </div>
             )}
-            <div className="message-bubble">
-              {message.file && (
-                <div className="uploaded-file-card">
-                  <span className="file-icon">
-                    {message.file.type.startsWith("image/")
-                      ? "🖼️"
-                      : message.file.type.includes("pdf")
-                      ? "📕"
-                      : message.file.type.includes("presentation")
-                      ? "📊"
-                      : message.file.type.includes("word")
-                      ? "📝"
-                      : "📄"}
-                  </span>
-
-                  <div className="file-details">
-                    <div className="file-name">{message.file.name}</div>
-
-                    <div className="file-size">
-                      {(message.file.size / 1024).toFixed(1)} KB
+            <div className="message-content">
+              <div className="message-bubble">
+                {message.file && (
+                  <div className="uploaded-file-card">
+                    <span className="file-icon">
+                      {message.file.type.startsWith("image/")
+                        ? "🖼️"
+                        : message.file.type.includes("pdf")
+                        ? "📕"
+                        : message.file.type.includes("presentation")
+                        ? "📊"
+                        : message.file.type.includes("word")
+                        ? "📝"
+                        : "📄"}
+                    </span>
+                    <div className="file-details">
+                      <div className="file-name">{message.file.name}</div>
+                      <div className="file-size">
+                        {(message.file.size / 1024).toFixed(1)} KB
+                      </div>
                     </div>
                   </div>
-                </div>
-              )}
-              {message.image && (
-                <img
-                  src={message.image}
-                  alt=""
-                  className="chat-image"
-                />
-              )}
-              <div>{message.text}</div>
+                )}
+                {message.image && (
+                  <img
+                    src={message.image}
+                    alt=""
+                    className="chat-image"
+                  />
+                )}
+                {editingId === message.id ? (
+                  <>
+                    <textarea
+                      value={editedText}
+                      onChange={(e) =>
+                        setEditedText(e.target.value)
+                      }
+                    />
+
+                    <button
+                      onClick={() => {
+                        onEditMessage(message.id, editedText);
+                        setEditingId(null);
+                      }}
+                    >
+                      Save
+                    </button>
+
+                    <button
+                      onClick={() => setEditingId(null)}
+                    >
+                      Cancel
+                    </button>
+                  </>
+                ) : (
+                  <div>{message.text}</div>
+                )}
+                {message.sender === "user" && (
+                  <button
+                    className="edit-message"
+                    onClick={() => {
+                      setEditingId(message.id);
+                      setEditedText(message.text);
+                    }}
+                  >
+                    <FiEdit2 />
+                  </button>
+                )}
+              </div>
+              <div className="message-time">
+                {message.timestamp
+                  ? new Date(message.timestamp).toLocaleTimeString([], {
+                      hour: "numeric",
+                      minute: "2-digit",
+                    })
+                  : ""}
+              </div>
             </div>
           </article>
         ))}

@@ -38,6 +38,7 @@ function createChat() {
         id: makeId(),
         sender: "milo",
         text: "Hi, I'm Milo. Type, speak, or show me a sign and we'll take it from there.",
+        timestamp: new Date().toISOString(),
       },
     ],
   };
@@ -297,6 +298,7 @@ async function sendMessage(rawText, image) {
     id: makeId(),
     sender: "user",
     text,
+    timestamp: new Date().toISOString(),
     image:
       image && image.type.startsWith("image/")
         ? URL.createObjectURL(image)
@@ -381,6 +383,7 @@ async function sendMessage(rawText, image) {
           id: makeId(),
           sender: "milo",
           text: reply,
+          timestamp: new Date().toISOString(),
         },
       ],
     }));
@@ -400,8 +403,69 @@ async function sendMessage(rawText, image) {
           id: makeId(),
           sender: "milo",
           text: "Sorry, something went wrong.",
+          timestamp: new Date().toISOString(),
         },
       ],
+    }));
+  }
+}
+async function editMessage(messageId, newText) {
+  const targetChatId = activeChat.id;
+
+  const currentChat = chats.find(
+    chat => chat.id === targetChatId
+  );
+  if (!currentChat) return;
+
+  const index = currentChat.messages.findIndex(
+    m => m.id === messageId
+  );
+
+  if (index === -1) return;
+
+  const updatedMessages = [...currentChat.messages];
+
+  updatedMessages[index] = {
+    ...updatedMessages[index],
+    text: newText,
+    timestamp: new Date().toISOString(),
+  };
+
+  const conversation = updatedMessages.slice(0, index + 1);
+
+  updateChat(targetChatId, chat => ({
+    ...chat,
+    isThinking: true,
+    messages: conversation,
+  }));
+
+  try {
+    const reply = await askMilo({
+      messages: conversation,
+      documents: currentChat.documents || [],
+    });
+
+    updateChat(targetChatId, chat => ({
+      ...chat,
+      isThinking: false,
+      messages: [
+        ...conversation,
+        {
+          id: makeId(),
+          sender: "milo",
+          text: reply,
+          timestamp: new Date().toISOString(),
+        },
+      ],
+    }));
+
+    if (autoSpeak) {
+      speak(reply);
+    }
+  } catch {
+    updateChat(targetChatId, chat => ({
+      ...chat,
+      isThinking: false,
     }));
   }
 }
@@ -471,7 +535,6 @@ Return ONLY the corrected sentence.`,
           onClose={() => setSidebarOpen(false)}
           onSelect={(id) => {
             setActiveId(id);
-            setSidebarOpen(false);
           }}
           onNew={startNewChat}
           onDelete={deleteChat}
@@ -574,6 +637,7 @@ Return ONLY the corrected sentence.`,
               isThinking={activeChat.isThinking}
               onDraftChange={setDraft}
               onSend={sendMessage}
+              onEditMessage={editMessage}
             />
 
             <CameraPanel
