@@ -1,4 +1,9 @@
 import { useEffect, useRef, useState } from "react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import { FiCopy, FiCheck } from "react-icons/fi";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 import {
   FiMic,
   FiSend,
@@ -17,6 +22,8 @@ export default function ChatWindow({
 }){
   const [editingId, setEditingId] = useState(null);
   const [editedText, setEditedText] = useState("");
+  const [copiedCode, setCopiedCode] = useState(null);
+  const [copiedMessage, setCopiedMessage] = useState(null);
   const bottomRef = useRef(null);
   const recognitionRef = useRef(null);
   const [isListening, setIsListening] = useState(false);
@@ -119,6 +126,24 @@ export default function ChatWindow({
     onSend(draft, selectedImage);
     setSelectedImage(null);
   }
+  async function copyCode(code) {
+    await navigator.clipboard.writeText(code);
+
+    setCopiedCode(code);
+
+    setTimeout(() => {
+      setCopiedCode(null);
+    }, 2000);
+  }
+  async function copyMessage(id, text) {
+    await navigator.clipboard.writeText(text);
+
+    setCopiedMessage(id);
+
+    setTimeout(() => {
+      setCopiedMessage(null);
+    }, 2000);
+  }
   return (
     <section
       className={`chat-panel ${dragging ? "dragging" : ""}`}
@@ -200,6 +225,83 @@ export default function ChatWindow({
                     >
                       Cancel
                     </button>
+                  </>
+                ) : message.sender === "milo" ? (
+                  <>
+                    <ReactMarkdown
+                      remarkPlugins={[remarkGfm]}
+                      components={{
+                        code({ inline, className, children, ...props }) {
+                          const match = /language-(\w+)/.exec(className || "");
+                          const code = String(children).replace(/\n$/, "");
+
+                          if (!inline && match) {
+                            return (
+                              <div className="code-block">
+                                <div className="code-header">
+                                  <span>{match[1]}</span>
+
+                                  <button
+                                    className="copy-button"
+                                    type="button"
+                                    onClick={() => copyCode(code)}
+                                  >
+                                    {copiedCode === code ? (
+                                      <>
+                                        <FiCheck size={14} />
+                                        Copied
+                                      </>
+                                    ) : (
+                                      <>
+                                        <FiCopy size={14} />
+                                        Copy
+                                      </>
+                                    )}
+                                  </button>
+                                </div>
+
+                                <SyntaxHighlighter
+                                  language={match[1]}
+                                  style={oneDark}
+                                  PreTag="div"
+                                  {...props}
+                                >
+                                  {code}
+                                </SyntaxHighlighter>
+                              </div>
+                            );
+                          }
+
+                          return (
+                            <code className={className} {...props}>
+                              {children}
+                            </code>
+                          );
+                        },
+                      }}
+                    >
+                      {message.text}
+                    </ReactMarkdown>
+
+                    <div className="message-actions">
+                      <button
+                        className="copy-response"
+                        type="button"
+                        onClick={() => copyMessage(message.id, message.text)}
+                      >
+                        {copiedMessage === message.id ? (
+                          <>
+                            <FiCheck size={14} />
+                            Copied
+                          </>
+                        ) : (
+                          <>
+                            <FiCopy size={14} />
+                            Copy
+                          </>
+                        )}
+                      </button>
+                    </div>
                   </>
                 ) : (
                   <div>{message.text}</div>

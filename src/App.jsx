@@ -630,7 +630,7 @@ Return ONLY the corrected sentence.`,
           </header>
 
           <div className="content-grid">
-
+                      
             <ChatWindow
               messages={activeChat.messages}
               draft={draft}

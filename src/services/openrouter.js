@@ -141,6 +141,153 @@ export async function generateResponse(
     return "Something went wrong.";
   }
 }
+export async function generateStreamingResponse(
+  conversation,
+  image = null,
+  webResults = "",
+  documents = [],
+  onToken
+) {
+  try {
+    const formattedMessages = conversation.map((msg, index) => {
+      const isLastUser =
+        msg.sender === "user" &&
+        index === conversation.length - 1;
+
+      const isImage =
+        image &&
+        typeof image === "string" &&
+        image.startsWith("data:image");
+
+      if (isImage && isLastUser) {
+        return {
+          role: "user",
+          content: [
+            {
+              type: "text",
+              text: msg.text,
+            },
+            {
+              type: "image_url",
+              image_url: {
+                url: image,
+              },
+            },
+          ],
+        };
+      }
+
+      return {
+        role: msg.sender === "user" ? "user" : "assistant",
+        content: msg.text,
+      };
+    });
+
+    let documentContext = "";
+
+    if (documents.length) {
+      documentContext = documents
+        .map(
+          (doc) => `
+Document Name:
+${doc.name}
+
+Document Content:
+${doc.text}
+`
+        )
+        .join("\n\n----------------------\n\n");
+    }
+
+    const response = await fetch(API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${API_KEY}`,
+      },
+      body: JSON.stringify({
+        model: "openai/gpt-4o-mini",
+        temperature: 0.2,
+        stream: true, 
+        messages: [
+          {
+            role: "system",
+            content: `
+You are Milo, an intelligent AI tutor.
+
+Your highest priority is factual accuracy.
+
+Never invent facts.
+Never invent names.
+Never invent CEOs.
+Never invent founders.
+Never invent dates.
+Never guess.
+
+Web Search Results:
+
+${webResults}
+
+Uploaded Documents:
+
+${documentContext}
+`,
+          },
+          ...formattedMessages,
+        ],
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Streaming request failed");
+    }
+
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+
+    let fullText = "";
+
+    while (true) {
+      const { value, done } = await reader.read();
+
+      if (done) break;
+
+      const chunk = decoder.decode(value);
+
+      const lines = chunk.split("\n");
+
+      for (const line of lines) {
+        if (!line.startsWith("data: ")) continue;
+
+        const data = line.replace("data: ", "").trim();
+
+        if (data === "[DONE]") {
+          return fullText;
+        }
+
+        try {
+          const json = JSON.parse(data);
+
+          const token =
+            json?.choices?.[0]?.delta?.content || "";
+
+          if (token) {
+            fullText += token;
+
+            onToken(fullText);
+          }
+        } catch {
+          
+        }
+      }
+    }
+
+    return fullText;
+  } catch (err) {
+    console.error(err);
+    return "Something went wrong.";
+  }
+}
 export async function improveSearchQuery(query) {
   try {
     const response = await fetch(API_URL, {

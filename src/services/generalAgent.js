@@ -1,4 +1,7 @@
-import { runAgent } from "./agentBase";
+import {
+  runAgent,
+  runStreamingAgent,
+} from "./agentBase";
 
 export async function generalAgent(chat, image = null) {
 
@@ -9,4 +12,17 @@ export async function generalAgent(chat, image = null) {
     shouldSearch: true,
   });
 
+}
+export async function streamingGeneralAgent(
+  chat,
+  image = null,
+  onToken
+) {
+  return await runStreamingAgent({
+    chat,
+    image,
+    domain: "GENERAL",
+    shouldSearch: true,
+    onToken,
+  });
 }

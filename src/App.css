@@ -1333,3 +1333,99 @@ body[data-theme="light"] .sign-output-heading button:hover svg{
     background:#e5e7eb;
     color:#111827;
 }
+.message-bubble h1,
+.message-bubble h2,
+.message-bubble h3,
+.message-bubble h4{
+    margin:16px 0 10px;
+    font-weight:700;
+}
+
+.message-bubble p{
+    margin:10px 0;
+    line-height:1.7;
+}
+
+.message-bubble ul,
+.message-bubble ol{
+    padding-left:22px;
+    margin:10px 0;
+}
+
+.message-bubble li{
+    margin:6px 0;
+}
+
+.message-bubble pre{
+    border-radius:12px;
+    overflow:auto;
+    margin:16px 0;
+}
+
+.message-bubble code{
+    font-family:Consolas, monospace;
+    font-size:14px;
+}
+
+.message-bubble blockquote{
+    border-left:4px solid #facc15;
+    padding-left:14px;
+    margin:14px 0;
+    color:#94a3b8;
+}
+
+.message-bubble table{
+    width:100%;
+    border-collapse:collapse;
+    margin:16px 0;
+}
+
+.message-bubble th,
+.message-bubble td{
+    border:1px solid #4b5563;
+    padding:10px;
+}
+
+.message-bubble a{
+    color:#3b82f6;
+}
+.message-bubble pre{
+    margin:16px 0;
+    border-radius:12px;
+    overflow-x:auto;
+}
+
+.message-bubble pre > div{
+    border-radius:12px;
+}
+.message-actions{
+    display:flex;
+    justify-content:flex-end;
+    margin-top:8px;
+
+    opacity:0;
+    transition:.2s;
+}
+
+.message-row.milo:hover .message-actions{
+    opacity:1;
+}
+
+.copy-response{
+    display:flex;
+    align-items:center;
+    gap:6px;
+
+    border:none;
+    background:none;
+
+    cursor:pointer;
+
+    color:#777;
+
+    font-size:13px;
+}
+
+.copy-response:hover{
+    color:#000;
+}
