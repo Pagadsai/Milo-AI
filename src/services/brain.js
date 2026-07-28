@@ -1,7 +1,10 @@
 import { detectIntent } from "./intent";
 import { isTeachingRequest } from "./teacher";
 import { developerAgent } from "./developerAgent";
-import { generalAgent } from "./generalAgent";
+import {
+  generalAgent,
+  streamingGeneralAgent,
+} from "./generalAgent";
 import { companyAgent } from "./companyAgent";
 
 import {
@@ -38,5 +41,33 @@ export async function askMilo(chat, image = null) {
         return await companyAgent(chat,image);
     default:
         return await generalAgent(chat,image);
+  }
+}
+export async function askMiloStreaming(
+  chat,
+  image = null,
+  onToken
+) {
+  const conversation = chat.messages;
+  const latestQuestion = getLatestQuestion(conversation);
+  const intent = await detectIntent(latestQuestion);
+  const teaching = isTeachingRequest(latestQuestion);
+  if (teaching) {
+    return streamingGeneralAgent(chat, image, onToken);
+  }
+
+  switch (intent) {
+    case "PROGRAMMING":
+      return generalAgent(chat, image);
+
+    case "COMPANY":
+      return generalAgent(chat, image);
+
+    default:
+      return streamingGeneralAgent(
+        chat,
+        image,
+        onToken
+      );
   }
 }

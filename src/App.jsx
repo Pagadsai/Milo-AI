@@ -444,7 +444,6 @@ async function editMessage(messageId, newText) {
       messages: conversation,
       documents: currentChat.documents || [],
     });
-
     updateChat(targetChatId, chat => ({
       ...chat,
       isThinking: false,

@@ -329,7 +329,12 @@ export default function ChatWindow({
             </div>
           </article>
         ))}
-        {isThinking && (
+        {isThinking &&
+          !messages.some(
+            message =>
+              message.sender === "milo" &&
+              message.text === ""
+          ) && (
           <article className="message-row milo">
             <div className="message-avatar">
               M
@@ -340,6 +345,7 @@ export default function ChatWindow({
             >
               <span />
               <span />
+
               <span />
             </div>
           </article>
