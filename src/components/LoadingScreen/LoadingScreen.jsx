@@ -1,6 +1,6 @@
 import "./LoadingScreen.css";
 
-import rabbit from "../../assets/rabbit.png"; // use your rabbit logo/image
+import rabbit from "../../assets/rabbit.png";
 
 export default function LoadingScreen() {
   return (
