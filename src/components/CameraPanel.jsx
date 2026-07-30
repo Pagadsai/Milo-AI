@@ -124,7 +124,6 @@ export default function CameraPanel({
           );
 
           const landmarks = result.landmarks?.[0];
-
           if (landmarks) {
             drawing.drawConnectors(
               landmarks,
