@@ -1,5 +1,6 @@
 import WelcomeScreen from "./components/WelcomeScreen";
-import { useEffect, useMemo, useState } from "react";
+import { buildSentence } from "./services/signSentence";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   FiMenu,
   FiSun,
@@ -67,6 +68,9 @@ export default function App() {
   });
   const [draft, setDraft] = useState("");
   const [signWords, setSignWords] = useState([]);
+  const [liveSentence, setLiveSentence] = useState("");
+  const [isBuildingSentence, setIsBuildingSentence] = useState(false);
+  const sentenceBuffer = useRef([]);
   const [autoSpeak, setAutoSpeak] = useState(true);
   const [sidebarOpen, setSidebarOpen] =
     useState(true);
@@ -165,6 +169,8 @@ export default function App() {
     setActiveId(chat.id);
     setDraft("");
     setSignWords([]);
+    setLiveSentence("");
+    sentenceBuffer.current = [];
   }
 
   function deleteChat(chatId) {
@@ -348,6 +354,8 @@ async function sendMessage(rawText, image) {
 
   setDraft("");
   setSignWords([]);
+  setLiveSentence("");
+  sentenceBuffer.current = [];
 
   updateChat(targetChatId, (chat) => ({
     ...chat,
@@ -470,10 +478,20 @@ async function editMessage(messageId, newText) {
 }
 
   function addDetectedSign(word) {
-    setSignWords((current) => [
-      ...current.slice(-5),
-      word,
-    ]);
+    setSignWords((current) => {
+      const updated =
+        current[current.length - 1] === word
+          ? current
+          : [...current, word].slice(-15);
+      sentenceBuffer.current = updated;
+      setLiveSentence(updated.join(" "));
+      setIsBuildingSentence(true);
+      buildSentence(updated, (sentence) => {
+        setLiveSentence(sentence);
+        setIsBuildingSentence(false);
+      });
+      return updated;
+    });
   }
 
   async function useDetectedSigns() {
@@ -639,18 +657,18 @@ Return ONLY the corrected sentence.`,
               onEditMessage={editMessage}
             />
 
-            <CameraPanel
-              signWords={signWords}
-              onSignDetected={
-                addDetectedSign
-              }
-              onUseSigns={
-                useDetectedSigns
-              }
-              onClearSigns={() =>
-                setSignWords([])
-              }
-            />
+           <CameraPanel
+             signWords={signWords}
+             liveSentence={liveSentence}
+             isBuildingSentence={isBuildingSentence}
+             onSignDetected={addDetectedSign}
+             onUseSigns={useDetectedSigns}
+             onClearSigns={() => {
+               setSignWords([]);
+               setLiveSentence("");
+               sentenceBuffer.current = [];
+             }}
+           />
 
           </div>
 

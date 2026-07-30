@@ -810,12 +810,17 @@ body[data-theme="light"] .conversation-item.active .conversation-main{
   color:#142033;
 }
 
-.camera-button.stop{
-  color:#ffc2c2;
-  border:1px solid
-      rgba(255,128,128,.2);
-  background:
-      rgba(255,100,100,.09);
+.camera-button.stop {
+  background: #fee2e2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+
+  transition: all .2s ease;
+}
+
+.camera-button.stop:hover {
+  background: #fecaca;
+  border-color: #fca5a5;
 }
 
 .camera-button:disabled{
@@ -1428,4 +1433,35 @@ body[data-theme="light"] .sign-output-heading button:hover svg{
 
 .copy-response:hover{
     color:#000;
+}
+
+.ai-sentence-box{
+    margin-top:18px;
+    padding:14px;
+    border-radius:14px;
+    border:1px solid rgba(255,255,255,.08);
+    background:rgba(255,255,255,.04);
+}
+
+.ai-sentence-heading{
+    font-size:13px;
+    font-weight:700;
+    opacity:.75;
+    margin-bottom:10px;
+    letter-spacing:.4px;
+}
+
+.ai-sentence{
+    min-height:50px;
+    font-size:16px;
+    line-height:1.7;
+    font-weight:500;
+    word-break:break-word;
+}
+
+.sentence-status{
+    margin-top:10px;
+    font-size:14px;
+    color:#7dd3fc;
+    font-weight:600;
 }

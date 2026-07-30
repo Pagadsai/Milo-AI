@@ -8,10 +8,12 @@ import {
 import { recognizeSign } from "../sign/recognizeSign";
 
 export default function CameraPanel({
-  signWords,
-  onSignDetected,
-  onUseSigns,
-  onClearSigns,
+    signWords,
+    liveSentence,
+    isBuildingSentence,
+    onSignDetected,
+    onUseSigns,
+    onClearSigns,
 }) {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
@@ -210,21 +212,47 @@ export default function CameraPanel({
   function stopCamera(updateState = true) {
     runningRef.current = false;
 
-    cancelAnimationFrame(frameRef.current);
-
-    streamRef.current?.getTracks().forEach((track) =>
-      track.stop()
-    );
-
-    streamRef.current = null;
-
-    if (videoRef.current)
+    if (frameRef.current) {
+      cancelAnimationFrame(frameRef.current);
+      frameRef.current = null;
+    }
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(track => track.stop());
+      streamRef.current = null;
+    }
+    if (videoRef.current) {
+      videoRef.current.pause();
       videoRef.current.srcObject = null;
+      videoRef.current.removeAttribute("src");
+      videoRef.current.load();
+    }
+    if (canvasRef.current) {
+      const ctx = canvasRef.current.getContext("2d");
+
+      ctx.clearRect(
+        0,
+        0,
+        canvasRef.current.width,
+        canvasRef.current.height
+      );
+
+      canvasRef.current.width = 0;
+      canvasRef.current.height = 0;
+    }
+
+    candidateRef.current = {
+      label: null,
+      frames: 0,
+      lastEmitted: 0,
+      lastLabel: null,
+    };
 
     setDetectedSign("");
+    setError("");
 
-    if (updateState)
+    if (updateState) {
       setCameraState("off");
+    }
   }
 
   const isLive = cameraState === "live";
@@ -328,7 +356,20 @@ export default function CameraPanel({
             "Your recognised signs will appear here"
           )}
         </div>
+        <div className="ai-sentence-box">
+          <div className="ai-sentence-heading">
+            Natural Sentence
+          </div>
 
+          <div className="ai-sentence">
+            {liveSentence || "Start signing to build a sentence..."}
+          </div>
+          {isBuildingSentence && (
+            <div className="sentence-status">
+              ✨ Understanding sign language...
+            </div>
+          )}
+        </div>
         <button
           className="use-signs-button"
           type="button"
