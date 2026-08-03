@@ -78,13 +78,9 @@ export default function CameraPanel({
       });
 
       const video = videoRef.current;
-
       streamRef.current = stream;
-
       video.srcObject = stream;
-
       await video.play();
-
       runningRef.current = true;
       setCameraState("live");
 
@@ -157,15 +153,12 @@ export default function CameraPanel({
       renderFrame();
     } catch (cameraError) {
       console.error(cameraError);
-
       setCameraState("error");
-
       setError(
         cameraError?.name === "NotAllowedError"
           ? "Camera permission denied."
           : "Unable to start camera."
       );
-
       stopCamera(false);
     }
   }
@@ -189,7 +182,6 @@ export default function CameraPanel({
     }
 
     setDetectedSign(label);
-
     const now = Date.now();
 
     if (

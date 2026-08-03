@@ -1,0 +1,25 @@
+.fact-card{
+    margin:12px 24px;
+    padding:10px 18px;
+
+    background:#fff8e6;
+    border:1px solid #ffd56a;
+    border-radius:12px;
+
+    display:flex;
+    align-items:center;
+    gap:12px;
+
+    box-shadow:0 3px 10px rgba(0,0,0,.05);
+}
+
+.fact-title{
+    font-weight:700;
+    color:#f59e0b;
+    white-space:nowrap;
+}
+
+.fact-text{
+    color:#555;
+    font-size:14px;
+}

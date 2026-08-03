@@ -78,8 +78,6 @@ export default function HandLandmarks({
           result.landmarks.forEach((lm) => {
             draw.drawLandmarks(lm);
             draw.drawConnectors(lm, HandLandmarker.HAND_CONNECTIONS);
-
-            // TRAIN MODE
             if (mode === "train" && isCollecting) {
               const dataset = JSON.parse(
                 localStorage.getItem("milo_dataset") || "[]"
@@ -97,7 +95,6 @@ export default function HandLandmarks({
             }
           });
 
-          // LIVE MODE (send full result ONCE)
           if (mode === "live" && onPredict) {
             onPredict(result.landmarks);
           }

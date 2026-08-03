@@ -7,6 +7,7 @@ import {
   FiMoon,
 } from "react-icons/fi";
 import "./App.css";
+import DidYouKnow from "./components/DidYouKnow";
 import { generateChatTitle } from "./services/chatTitle";
 import CameraPanel from "./components/CameraPanel";
 import ChatWindow from "./components/ChatWindow";
@@ -645,30 +646,31 @@ Return ONLY the corrected sentence.`,
 </div>
 
           </header>
+          <DidYouKnow />
 
           <div className="content-grid">
-                      
-            <ChatWindow
-              messages={activeChat.messages}
-              draft={draft}
-              isThinking={activeChat.isThinking}
-              onDraftChange={setDraft}
-              onSend={sendMessage}
-              onEditMessage={editMessage}
-            />
 
-           <CameraPanel
-             signWords={signWords}
-             liveSentence={liveSentence}
-             isBuildingSentence={isBuildingSentence}
-             onSignDetected={addDetectedSign}
-             onUseSigns={useDetectedSigns}
-             onClearSigns={() => {
-               setSignWords([]);
-               setLiveSentence("");
-               sentenceBuffer.current = [];
-             }}
-           />
+              <ChatWindow
+                  messages={activeChat.messages}
+                  draft={draft}
+                  isThinking={activeChat.isThinking}
+                  onDraftChange={setDraft}
+                  onSend={sendMessage}
+                  onEditMessage={editMessage}
+              />
+
+              <CameraPanel
+                  signWords={signWords}
+                  liveSentence={liveSentence}
+                  isBuildingSentence={isBuildingSentence}
+                  onSignDetected={addDetectedSign}
+                  onUseSigns={useDetectedSigns}
+                  onClearSigns={() => {
+                      setSignWords([]);
+                      setLiveSentence("");
+                      sentenceBuffer.current = [];
+                  }}
+              />
 
           </div>
 
