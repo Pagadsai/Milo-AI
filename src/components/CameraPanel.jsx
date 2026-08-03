@@ -214,9 +214,7 @@ export default function CameraPanel({
         onSignDetected(label);
         candidate.lastLabel = label;
       }
-
       candidate.lastEmitted = now;
-
       candidate.label = null;
       candidate.frames = 0;
     }
