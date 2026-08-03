@@ -26,6 +26,14 @@ function makeId() {
     `${Date.now()}-${Math.random()}`
   );
 }
+function getGreeting() {
+  const hour = new Date().getHours();
+
+  if (hour < 12) return "🌅 Good Morning!";
+  if (hour < 17) return "☀️ Good Afternoon!";
+
+  return "🌙 Good Evening!";
+}
 
 function createChat() {
   return {
@@ -46,7 +54,11 @@ function createChat() {
       {
         id: makeId(),
         sender: "milo",
-        text: "Hi, I'm Milo. Type, speak, or show me a sign and we'll take it from there.",
+        text: `${getGreeting()}
+
+        I'm Milo 👋
+
+        Type, speak, or show me a sign and we'll take it from there.`,
         timestamp: new Date().toISOString(),
       },
     ],
@@ -346,7 +358,6 @@ async function sendMessage(rawText, image) {
         extractedDocument,
       ]
     : currentChat.documents || [];
-
   let title = currentChat.title;
 
   if (currentChat.messages.length === 1) {
@@ -435,28 +446,21 @@ async function sendMessage(rawText, image) {
 }
 async function editMessage(messageId, newText) {
   const targetChatId = activeChat.id;
-
   const currentChat = chats.find(
     chat => chat.id === targetChatId
   );
   if (!currentChat) return;
-
   const index = currentChat.messages.findIndex(
     m => m.id === messageId
   );
-
   if (index === -1) return;
-
   const updatedMessages = [...currentChat.messages];
-
   updatedMessages[index] = {
     ...updatedMessages[index],
     text: newText,
     timestamp: new Date().toISOString(),
   };
-
   const conversation = updatedMessages.slice(0, index + 1);
-
   updateChat(targetChatId, chat => ({
     ...chat,
     isThinking: true,
