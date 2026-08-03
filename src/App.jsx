@@ -35,6 +35,13 @@ function createChat() {
     archived: false,
     isThinking: false,
     documents: [],
+    stats: {
+      messagesSent: 0,
+      aiReplies: 0,
+      signsDetected: 0,
+      sentencesBuilt: 0,
+      sessionStart: Date.now(),
+    },
     messages: [
       {
         id: makeId(),
@@ -347,10 +354,14 @@ async function sendMessage(rawText, image) {
   }
 
   updateChat(targetChatId, (chat) => ({
-    ...chat,
-    title,
-    documents: updatedDocuments,
-    messages: [...chat.messages, userMessage],
+      ...chat,
+      title,
+      documents: updatedDocuments,
+      stats: {
+          ...chat.stats,
+          messagesSent: chat.stats.messagesSent + 1,
+      },
+      messages: [...chat.messages, userMessage],
   }));
 
   setDraft("");
@@ -386,14 +397,18 @@ async function sendMessage(rawText, image) {
     updateChat(targetChatId, (chat) => ({
       ...chat,
       isThinking: false,
+      stats: {
+          ...chat.stats,
+          aiReplies: chat.stats.aiReplies + 1,
+      },
       messages: [
-        ...chat.messages,
-        {
-          id: makeId(),
-          sender: "milo",
-          text: reply,
-          timestamp: new Date().toISOString(),
-        },
+          ...chat.messages,
+          {
+              id: makeId(),
+              sender: "milo",
+              text: reply,
+              timestamp: new Date().toISOString(),
+          },
       ],
     }));
 
@@ -486,9 +501,25 @@ async function editMessage(messageId, newText) {
           : [...current, word].slice(-15);
       sentenceBuffer.current = updated;
       setLiveSentence(updated.join(" "));
+      updateChat(activeChat.id, (chat) => ({
+          ...chat,
+
+          stats: {
+              ...chat.stats,
+              signsDetected: chat.stats.signsDetected + 1,
+          },
+      }));
       setIsBuildingSentence(true);
       buildSentence(updated, (sentence) => {
         setLiveSentence(sentence);
+        updateChat(activeChat.id, (chat) => ({
+            ...chat,
+            stats: {
+                ...chat.stats,
+                sentencesBuilt:
+                    chat.stats.sentencesBuilt + 1,
+            },
+        }));
         setIsBuildingSentence(false);
       });
       return updated;
@@ -497,10 +528,8 @@ async function editMessage(messageId, newText) {
 
   async function useDetectedSigns() {
     if (!signWords.length) return;
-
     const rawSentence =
       signWords.join(" ").toLowerCase();
-
     try {
       const corrected =
         await generateResponse([
@@ -514,7 +543,6 @@ ${rawSentence}
 Return ONLY the corrected sentence.`,
           },
         ]);
-
       setDraft((current) =>
         [current.trim(), corrected]
           .filter(Boolean)
@@ -660,6 +688,7 @@ Return ONLY the corrected sentence.`,
               />
 
               <CameraPanel
+                  stats={activeChat.stats}
                   signWords={signWords}
                   liveSentence={liveSentence}
                   isBuildingSentence={isBuildingSentence}

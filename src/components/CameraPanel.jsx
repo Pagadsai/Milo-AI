@@ -6,8 +6,8 @@ import {
   HandLandmarker,
 } from "@mediapipe/tasks-vision";
 import { recognizeSign } from "../sign/recognizeSign";
-
 export default function CameraPanel({
+    stats,
     signWords,
     liveSentence,
     isBuildingSentence,
@@ -21,7 +21,8 @@ export default function CameraPanel({
   const landmarkerRef = useRef(null);
   const frameRef = useRef(null);
   const runningRef = useRef(false);
-
+  const [showGestures, setShowGestures] = useState(false);
+  const [showStats, setShowStats] = useState(false);
   const candidateRef = useRef({
     label: null,
     frames: 0,
@@ -32,7 +33,31 @@ export default function CameraPanel({
   const [cameraState, setCameraState] = useState("off");
   const [detectedSign, setDetectedSign] = useState("");
   const [error, setError] = useState("");
+  const [sessionTime, setSessionTime] = useState("0 sec");
+  useEffect(() => {
+    const updateTime = () => {
+      const seconds = Math.floor(
+        (Date.now() - stats.sessionStart) / 1000
+      );
 
+      if (seconds < 60) {
+        setSessionTime(`${seconds} sec`);
+      } else if (seconds < 3600) {
+        const mins = Math.floor(seconds / 60);
+        setSessionTime(`${mins} min`);
+      } else {
+        const hrs = Math.floor(seconds / 3600);
+        const mins = Math.floor((seconds % 3600) / 60);
+        setSessionTime(`${hrs} hr ${mins} min`);
+      }
+    };
+
+    updateTime();
+
+    const timer = setInterval(updateTime, 1000);
+
+    return () => clearInterval(timer);
+  }, [stats.sessionStart]);
   useEffect(() => stopCamera, []);
 
   async function createLandmarker() {
@@ -97,12 +122,9 @@ export default function CameraPanel({
         canvas.height = video.videoHeight || 480;
 
         context.clearRect(0, 0, canvas.width, canvas.height);
-
         context.save();
-
         context.translate(canvas.width, 0);
         context.scale(-1, 1);
-
         context.drawImage(
           video,
           0,
@@ -357,7 +379,7 @@ export default function CameraPanel({
           </div>
           {isBuildingSentence && (
             <div className="sentence-status">
-              ✨ Understanding sign language...
+              ✨ Understanding sign...
             </div>
           )}
         </div>
@@ -370,20 +392,72 @@ export default function CameraPanel({
           <FiCheck />
           {" "}Add to message
         </button>
+        <div className="stats-section">
+
+          <button
+              className="stats-toggle"
+              onClick={() => setShowStats(!showStats)}
+          >
+              📊 Chat Statistics {showStats ? "▲" : "▼"}
+          </button>
+
+          {showStats && (
+              <div className="stats-panel">
+
+                  <div className="stat-row">
+                      <span>💬 Messages Sent</span>
+                      <strong>{stats.messagesSent}</strong>
+                  </div>
+
+                  <div className="stat-row">
+                      <span>🤖 AI Replies</span>
+                      <strong>{stats.aiReplies}</strong>
+                  </div>
+
+                  <div className="stat-row">
+                      <span>✋ Signs Detected</span>
+                      <strong>{stats.signsDetected}</strong>
+                  </div>
+
+                  <div className="stat-row">
+                      <span>📝 Sentences Built</span>
+                      <strong>{stats.sentencesBuilt}</strong>
+                  </div>
+
+                  <div className="stat-row">
+                      <span>⏱ Session Time</span>
+                      <strong>{sessionTime}</strong>
+                  </div>
+
+              </div>
+          )}
+
+      </div>
       </div>
 
-      <div className="sign-guide">
-        <h4>Supported Gestures</h4>
+      <div className="gesture-section">
 
-        <p>👋 HELLO</p>
-        <p>👍 YES</p>
-        <p>✊ STOP</p>
-        <p>👌 OK</p>
-        <p>✌️ PEACE</p>
-        <p>☝️ I</p>
-        <p>🤘 HELP</p>
-        <p>🤟 LOVE</p>
-        <p>👌 GOOD</p>
+          <button
+              className="gesture-toggle"
+              onClick={() => setShowGestures(!showGestures)}
+          >
+              📚 Supported Gestures {showGestures ? "▲" : "▼"}
+          </button>
+
+          {showGestures && (
+              <div className="supported-gestures">
+                  <div>👋 HELLO</div>
+                  <div>👍 YES</div>
+                  <div>✋ STOP</div>
+                  <div>👌 OK</div>
+                  <div>✌️ PEACE</div>
+                  <div>☝️ I</div>
+                  <div>🤝 HELP</div>
+                  <div>🙏 THANK YOU</div>
+                  <div>❤️ LOVE</div>
+              </div>
+          )}
+
       </div>
     </aside>
   );
