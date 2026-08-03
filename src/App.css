@@ -1548,3 +1548,43 @@ body[data-theme="light"] .sign-output-heading button:hover svg{
 .stat-row strong{
     color:var(--text-primary);
 }
+
+.undo-toast{
+
+    position:fixed;
+
+    bottom:25px;
+    left:50%;
+
+    transform:translateX(-50%);
+
+    background:#1f2937;
+    color:white;
+
+    padding:14px 22px;
+
+    border-radius:12px;
+
+    display:flex;
+    align-items:center;
+    gap:18px;
+
+    box-shadow:0 8px 24px rgba(0,0,0,.25);
+
+    z-index:9999;
+}
+
+.undo-toast button{
+
+    background:#facc15;
+
+    border:none;
+
+    padding:8px 16px;
+
+    border-radius:8px;
+
+    font-weight:700;
+
+    cursor:pointer;
+}

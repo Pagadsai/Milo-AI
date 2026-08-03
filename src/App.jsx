@@ -88,6 +88,9 @@ export default function App() {
   });
   const [draft, setDraft] = useState("");
   const [signWords, setSignWords] = useState([]);
+  const [deletedChat, setDeletedChat] = useState(null);
+  const [showUndo, setShowUndo] = useState(false);
+  const undoTimer = useRef(null); 
   const [liveSentence, setLiveSentence] = useState("");
   const [isBuildingSentence, setIsBuildingSentence] = useState(false);
   const sentenceBuffer = useRef([]);
@@ -194,30 +197,37 @@ export default function App() {
   }
 
   function deleteChat(chatId) {
-    setChats((current) => {
-      const remaining =
-        current.filter(
-          (chat) =>
-            chat.id !== chatId
-        );
-
+      const chatToDelete = chats.find(chat => chat.id === chatId);
+      if (!chatToDelete) return;
+      setDeletedChat(chatToDelete);
+      setShowUndo(true);
+      const remaining = chats.filter(chat => chat.id !== chatId);
       if (remaining.length === 0) {
-        const replacement =
-          createChat();
-
-        setActiveId(
-          replacement.id
-        );
-        return [replacement];
+          const newChat = createChat();
+          setChats([newChat]);
+          setActiveId(newChat.id);
+      } else {
+          setChats(remaining);
+          if (activeId === chatId) {
+              setActiveId(remaining[0].id);
+          }
       }
-
-      if (chatId === activeId) {
-        setActiveId(
-          remaining[0].id
-        );
-      }
-      return remaining;
-    });
+      clearTimeout(undoTimer.current);
+      undoTimer.current = setTimeout(() => {
+          setDeletedChat(null);
+          setShowUndo(false);
+      }, 5000);
+  }
+  function undoDelete() {
+      if (!deletedChat) return;
+      clearTimeout(undoTimer.current);
+      setChats(current => [
+          deletedChat,
+          ...current
+      ]);
+      setActiveId(deletedChat.id);
+      setDeletedChat(null);
+      setShowUndo(false);
   }
 
   function renameChat(chatId, title) {
@@ -706,9 +716,15 @@ Return ONLY the corrected sentence.`,
               />
 
           </div>
-
+          {showUndo && (
+              <div className="undo-toast">
+                  🗑 Conversation deleted
+                  <button onClick={undoDelete}>
+                      UNDO
+                  </button>
+              </div>
+          )}
         </main>
-
       </div>
     </>
   );
