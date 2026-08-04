@@ -18,8 +18,11 @@ export default function CameraPanel({
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const streamRef = useRef(null);
+  const [handDetected, setHandDetected] = useState(false);
+  const [fps, setFps] = useState(0);
   const landmarkerRef = useRef(null);
   const frameRef = useRef(null);
+  const [latency, setLatency] = useState(0);
   const runningRef = useRef(false);
   const [showGestures, setShowGestures] = useState(false);
   const [showStats, setShowStats] = useState(false);
@@ -114,6 +117,8 @@ export default function CameraPanel({
       const drawing = new DrawingUtils(context);
 
       let frameCounter = 0;
+      let fpsFrames = 0;
+      let fpsLastUpdate = performance.now();
 
       function renderFrame() {
         if (!runningRef.current) return;
@@ -134,8 +139,16 @@ export default function CameraPanel({
         );
 
         frameCounter++;
+        fpsFrames++;
+        const now = performance.now();
+        if (now - fpsLastUpdate >= 1000) {
+            setFps(fpsFrames);
+            fpsFrames = 0;
+            fpsLastUpdate = now;
+        }
 
         if (frameCounter % 2 === 0) {
+          const start = performance.now();
           const result = landmarker.detectForVideo(
             video,
             performance.now()
@@ -143,31 +156,32 @@ export default function CameraPanel({
 
           const landmarks = result.landmarks?.[0];
           if (landmarks) {
-            drawing.drawConnectors(
-              landmarks,
-              HandLandmarker.HAND_CONNECTIONS,
-              {
-                color: "#9af7d1",
-                lineWidth: 3,
-              }
-            );
-
-            drawing.drawLandmarks(landmarks, {
-              color: "#ffca58",
-              fillColor: "#101c2e",
-              radius: 4,
-            });
-
-            const sign = recognizeSign(landmarks);
-
-            trackStableSign(sign);
-          } else {
-            trackStableSign(null);
+              setHandDetected(true);
+              drawing.drawConnectors(
+                  landmarks,
+                  HandLandmarker.HAND_CONNECTIONS,
+                  {
+                      color: "#9af7d1",
+                      lineWidth: 3,
+                  }
+              );
+              drawing.drawLandmarks(landmarks, {
+                  color: "#ffca58",
+                  fillColor: "#101c2e",
+                  radius: 4,
+              });
+              const sign = recognizeSign(landmarks);
+              const end = performance.now();
+              setLatency(Math.round(end - start));
+              trackStableSign(sign);
+          }
+          else {
+              setHandDetected(false);
+              trackStableSign(null);
           }
         }
 
         context.restore();
-
         frameRef.current =
           requestAnimationFrame(renderFrame);
       }
@@ -272,6 +286,21 @@ export default function CameraPanel({
         <div>
           <span className="eyebrow">Sign to text</span>
           <h2>Live Interpreter</h2>
+          <div
+              className={`hand-status ${
+                  !isLive
+                      ? "camera-off"
+                      : handDetected
+                      ? "detected"
+                      : "not-detected"
+              }`}
+          >
+              {!isLive
+                  ? "⚫ Camera Off"
+                  : handDetected
+                  ? "🟢 Hand Detected"
+                  : "🔴 No Hand Detected"}
+          </div>
         </div>
 
         <span className={`camera-status ${cameraState}`}>
@@ -424,6 +453,14 @@ export default function CameraPanel({
                   <div className="stat-row">
                       <span>⏱ Session Time</span>
                       <strong>{sessionTime}</strong>
+                  </div>
+                  <div className="stat-row">
+                      <span>⚡ FPS</span>
+                      <strong>{fps}</strong>
+                  </div>
+                  <div className="stat-row">
+                      <span>⏱ Recognition Latency</span>
+                      <strong>{latency} ms</strong>
                   </div>
 
               </div>

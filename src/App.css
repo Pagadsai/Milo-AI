@@ -1407,7 +1407,6 @@ body[data-theme="light"] .sign-output-heading button:hover svg{
     display:flex;
     justify-content:flex-end;
     margin-top:8px;
-
     opacity:0;
     transition:.2s;
 }
@@ -1420,14 +1419,10 @@ body[data-theme="light"] .sign-output-heading button:hover svg{
     display:flex;
     align-items:center;
     gap:6px;
-
     border:none;
     background:none;
-
     cursor:pointer;
-
     color:#777;
-
     font-size:13px;
 }
 
@@ -1550,42 +1545,27 @@ body[data-theme="light"] .sign-output-heading button:hover svg{
 }
 
 .undo-toast{
-
     position:fixed;
-
     bottom:25px;
     left:50%;
-
     transform:translateX(-50%);
-
     background:#1f2937;
     color:white;
-
     padding:14px 22px;
-
     border-radius:12px;
-
     display:flex;
     align-items:center;
     gap:18px;
-
     box-shadow:0 8px 24px rgba(0,0,0,.25);
-
     z-index:9999;
 }
 
 .undo-toast button{
-
     background:#facc15;
-
     border:none;
-
     padding:8px 16px;
-
     border-radius:8px;
-
     font-weight:700;
-
     cursor:pointer;
 }
 .sidebar-search{
@@ -1597,12 +1577,10 @@ body[data-theme="light"] .sign-output-heading button:hover svg{
     top:105%;
     left:0;
     right:0;
-
     background:#1d2638;
     border-radius:12px;
     overflow:hidden;
     z-index:999;
-
     box-shadow:0 8px 20px rgba(0,0,0,.35);
 }
 
@@ -1660,4 +1638,47 @@ body[data-theme="light"] .sign-output-heading button:hover svg{
 
 .dark .clear-history{
     color:#ffca58;
+}
+
+.hand-status{
+    margin-top:10px;
+    padding:8px 12px;
+    border-radius:10px;
+    text-align:center;
+    font-weight:600;
+    font-size:14px;
+}
+
+.hand-status.detected{
+    background:#e9fff1;
+    color:#138a36;
+    border:1px solid #8dd9a5;
+}
+
+.hand-status.not-detected{
+    background:#fff0f0;
+    color:#d63031;
+    border:1px solid #ffb3b3;
+}
+
+.dark .hand-status.detected{
+    background:#17351f;
+    color:#72f0a1;
+}
+
+.dark .hand-status.not-detected{
+    background:#3b1717;
+    color:#ff8d8d;
+}
+
+.hand-status.camera-off{
+    background:#ececec;
+    color:#666;
+    border:1px solid #d0d0d0;
+}
+
+.dark .hand-status.camera-off{
+    background:#263247;
+    color:#bfc8d4;
+    border:1px solid #3e4b60;
 }

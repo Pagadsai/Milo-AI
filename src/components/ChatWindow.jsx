@@ -84,6 +84,7 @@ export default function ChatWindow({
     if (!file) return;
     setSelectedImage(file);
   }
+  
   function handleDragOver(e) {
     e.preventDefault();
     setDragging(true);
