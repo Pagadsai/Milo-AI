@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import rabbitLogo from "../assets/rabbit-logo.png";
 import {
   FiEdit2,
@@ -25,6 +25,8 @@ export default function Sidebar({
   const [editingId, setEditingId] = useState(null);
   const [title, setTitle] = useState("");
   const [search, setSearch] = useState("");
+  const [recentSearches, setRecentSearches] = useState([]);
+  const [showRecent, setShowRecent] = useState(false);
   const [showArchived, setShowArchived] = useState(false);
   function beginRename(chat) {
     setEditingId(chat.id);
@@ -48,6 +50,16 @@ export default function Sidebar({
       return a.pinned ? -1 : 1;
     });
 
+  function handleSearch(value) {
+      if (!value.trim()) return;
+      setRecentSearches(prev => {
+          const updated = [
+              value,
+              ...prev.filter(item => item !== value)
+          ];
+          return updated.slice(0,5);
+      });
+  }
   return (
     <>
       {isOpen && (
@@ -86,16 +98,48 @@ export default function Sidebar({
         </div>
 
         <div className="sidebar-search">
-          <FiSearch className="search-icon" />
+            <input
+                type="text"
+                placeholder="Search conversations..."
+                value={search}
+                onChange={(e)=>setSearch(e.target.value)}
+                onFocus={()=>setShowRecent(true)}
+                onBlur={()=>setTimeout(()=>setShowRecent(false),200)}
+                onKeyDown={(e)=>{
+                    if(e.key==="Enter"){
+                        handleSearch(search);
+                    }
+                }}
+            />
+            {showRecent && recentSearches.length > 0 && (
+              <div className="recent-searches">
 
-          <input
-            type="text"
-            placeholder="Search conversations..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
+                <div className="recent-title">
+                  Recent Searches
+                </div>
+
+                {recentSearches.map((item, index) => (
+                  <div
+                    key={index}
+                    className="recent-search-item"
+                    onClick={() => {
+                      setSearch(item);
+                      handleSearch(item);
+                    }}
+                  >
+                    🕘 {item}
+                  </div>
+                ))}
+                <button
+                  className="clear-history"
+                  onClick={() => setRecentSearches([])}
+                >
+                  Clear History
+                </button>
+
+              </div>
+            )}
         </div>
-
         <button
           className="new-chat-button"
           type="button"

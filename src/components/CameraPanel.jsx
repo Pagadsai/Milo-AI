@@ -239,7 +239,6 @@ export default function CameraPanel({
     }
     if (canvasRef.current) {
       const ctx = canvasRef.current.getContext("2d");
-
       ctx.clearRect(
         0,
         0,

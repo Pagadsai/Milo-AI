@@ -2,77 +2,60 @@ import { useEffect, useState } from "react";
 import "./DidYouKnow.css";
 
 const facts = [
+  "🧠 Your brain uses about 20% of your body's total energy.",
+  "🦈 Sharks existed before trees appeared on Earth.",
+  "🌍 Antarctica is the world's largest desert.",
+  "🪐 A day on Venus is longer than a year on Venus.",
+  "🐙 Octopuses have three hearts and blue blood.",
+  "🍌 Bananas are naturally slightly radioactive.",
+  "🌊 Over 95% of Earth's oceans remain unexplored.",
+  "🌙 The Moon moves about 3.8 cm away from Earth every year.",
+  "⚡ Lightning is about five times hotter than the Sun's surface.",
+  "❄️ Hot water can sometimes freeze faster than cold water.",
 
-    // Programming
-    "The first computer bug was an actual moth found inside a computer in 1947.",
-    "JavaScript was created in just 10 days.",
-    "Python is named after Monty Python, not the snake.",
-    "React was created by Facebook in 2013.",
-    "The first website is still online today.",
+  "💻 The first computer bug was an actual moth.",
+  "🌐 The world's first website is still online today.",
+  "⌨️ The @ symbol existed long before email.",
+  "💾 The first hard drive stored only 5 MB.",
+  "📱 Your smartphone is millions of times more powerful than Apollo 11's computer.",
+  "🤖 AI predicts words—it doesn't think like humans.",
+  "🧠 Machine learning improves by finding patterns in data.",
+  "📷 Computer vision allows AI to 'see' images.",
+  "🎮 The first computer mouse was made of wood.",
+  "🛰️ GPS only works because satellites account for Einstein's relativity.",
 
-    // AI
-    "Artificial Intelligence can recognize images faster than humans in some tasks.",
-    "Machine Learning allows computers to learn from data.",
-    "Large Language Models predict the next word one token at a time.",
-    "Computer Vision helps computers understand images.",
-    "Generative AI can create text, images and music.",
+  "🤟 There are over 300 different sign languages worldwide.",
+  "✋ ASL and BSL are completely different languages.",
+  "😊 Facial expressions are an essential part of sign language.",
+  "👶 Babies can learn signs before they can speak.",
+  "🌍 Millions of people use sign language every day.",
+  "🤝 Sign language has its own grammar and sentence structure.",
+  "👀 Eye contact is important in sign language conversations.",
+  "✍️ Fingerspelling is used for names and uncommon words.",
+  "🎭 Body posture can completely change a sign's meaning.",
+  "🌐 Every country may have its own sign language.",
 
-    // Space
-    "One day on Venus is longer than one year on Venus.",
-    "The Sun contains over 99% of the Solar System's mass.",
-    "Neutron stars are incredibly dense.",
-    "Jupiter has more than 90 known moons.",
-    "Light from the Sun takes about 8 minutes to reach Earth.",
+  "🐧 Penguins propose with pebbles.",
+  "🦒 Giraffes have the same number of neck bones as humans.",
+  "🦋 Butterflies taste using their feet.",
+  "🐘 Elephants can recognize themselves in a mirror.",
+  "🦩 Flamingos are born gray, not pink.",
+  "🐝 Honey never spoils.",
+  "🐢 Some turtles can breathe through their backsides.",
+  "🐸 Frogs don't drink water—they absorb it through their skin.",
+  "🦉 Owls cannot move their eyes.",
+  "🦑 Giant squids have eyes as large as basketballs.",
 
-    // Science
-    "Water expands when it freezes.",
-    "Lightning is hotter than the surface of the Sun.",
-    "Your body contains trillions of cells.",
-    "Sound travels faster in water than air.",
-    "Humans share about 60% of their DNA with bananas.",
-
-    // Mathematics
-    "Zero was invented in India.",
-    "Pi never ends.",
-    "A prime number has exactly two factors.",
-    "Infinity is not a number.",
-    "The Fibonacci sequence appears in nature.",
-
-    // Geography
-    "Russia is the largest country in the world.",
-    "Africa has 54 countries.",
-    "The Pacific Ocean is the largest ocean.",
-    "Mount Everest is Earth's tallest mountain above sea level.",
-    "The Sahara is the largest hot desert.",
-
-    // History
-    "The Great Wall of China isn't visible from space with the naked eye.",
-    "Paper was invented in China.",
-    "The printing press changed the world.",
-    "The wheel was invented over 5000 years ago.",
-    "The Internet became public in the 1990s.",
-
-    // Animals
-    "Octopuses have three hearts.",
-    "A group of flamingos is called a flamboyance.",
-    "Cheetahs are the fastest land animals.",
-    "Elephants cannot jump.",
-    "Honey never spoils.",
-
-    // Technology
-    "The first email was sent in 1971.",
-    "Over 90% of the world's data has been created in recent years.",
-    "Cloud computing doesn't actually store data in the clouds.",
-    "USB stands for Universal Serial Bus.",
-    "The QWERTY keyboard was designed to prevent jams.",
-
-    // Random
-    "Chess has more possible games than atoms in the observable universe.",
-    "The human brain has around 86 billion neurons.",
-    "Bamboo grows faster than most plants.",
-    "Butterflies taste with their feet.",
-    "A day on Mercury lasts 176 Earth days."
-
+  "🚀 There are more stars than grains of sand on Earth.",
+  "☀️ Light from the Sun takes about 8 minutes to reach Earth.",
+  "🌌 Neutron stars can spin over 700 times every second.",
+  "🌠 Saturn would float if there were a large enough ocean.",
+  "🌎 Earth is the only known planet with liquid surface water.",
+  "📚 Oxford University is older than the Aztec Empire.",
+  "🏛️ Cleopatra lived closer to the Moon landing than to the Great Pyramid's construction.",
+  "⏱️ The shortest recorded war lasted less than one hour.",
+  "🎨 Blue was once one of the rarest colors in nature.",
+  "🧬 Every human shares about 99.9% of their DNA with every other human."
 ];
 
 export default function DidYouKnow() {

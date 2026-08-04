@@ -1588,3 +1588,76 @@ body[data-theme="light"] .sign-output-heading button:hover svg{
 
     cursor:pointer;
 }
+.sidebar-search{
+    position: relative;
+    margin-bottom: 16px;
+}
+.recent-searches{
+    position:absolute;
+    top:105%;
+    left:0;
+    right:0;
+
+    background:#1d2638;
+    border-radius:12px;
+    overflow:hidden;
+    z-index:999;
+
+    box-shadow:0 8px 20px rgba(0,0,0,.35);
+}
+
+.recent-title{
+    padding:10px 14px;
+    font-size:13px;
+    font-weight:600;
+    color:#ffca58;
+    border-bottom:1px solid #31415d;
+}
+
+.recent-search-item{
+    padding:12px 14px;
+    color:white;
+    cursor:pointer;
+    transition:.2s;
+}
+
+.recent-search-item:hover{
+    background:#2b3d5d;
+}
+
+.clear-history{
+    width:100%;
+    border:none;
+    padding:12px;
+    background:#1d2638;
+    color:#ffca58;
+    cursor:pointer;
+    font-weight:600;
+}
+
+.clear-history:hover{
+    background:#2b3d5d;
+}
+
+.dark .recent-searches{
+    background:#1b2435;
+    border:1px solid #31415d;
+    color:#ffffff;
+}
+
+.dark .recent-title{
+    color:#ffffff;
+    border-bottom:1px solid #31415d;
+}
+
+.dark .recent-search-item{
+    color:#ffffff;
+}
+
+.dark .recent-search-item:hover{
+    background:#2d3c59;
+}
+
+.dark .clear-history{
+    color:#ffca58;
+}
