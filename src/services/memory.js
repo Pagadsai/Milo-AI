@@ -61,3 +61,16 @@ export function buildConversationMemory(conversation) {
     .map(msg => `${msg.sender}: ${msg.text}`)
     .join("\n");
 }
+export function deleteMemoryField(field) {
+  const memory = loadMemory();
+  delete memory[field];
+  saveMemory(memory);
+  return memory;
+}
+
+export function editMemoryField(field, value) {
+  const memory = loadMemory()
+  memory[field] = value;
+  saveMemory(memory);
+  return memory;
+}

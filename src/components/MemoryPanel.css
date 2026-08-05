@@ -1,0 +1,159 @@
+:root{
+    --panel-bg:#ffffff;
+    --card-bg:#fafafa;
+
+    --text-primary:#202124;
+    --text-secondary:#666;
+
+    --border-color:#e8e8e8;
+
+    --button-bg:#f3f4f6;
+    --button-hover:#e5e7eb;
+
+    --input-bg:white;
+}
+.dark{
+    --panel-bg:#121826;
+    --card-bg:#1c2435;
+
+    --text-primary:#ffffff;
+    --text-secondary:#c5c5c5;
+
+    --border-color:#2d3748;
+
+    --button-bg:#2d3748;
+    --button-hover:#374151;
+
+    --input-bg:#111827;
+}
+.memory-panel{
+    width:320px;
+    background:#fff;
+    border-right:1px solid #e8e8e8;
+    display:flex;
+    flex-direction:column;
+    padding:20px;
+    box-sizing:border-box;
+    overflow-y:auto;
+    overflow:hidden;
+    transition:width .3s ease, padding .3s ease;
+    background: var(--panel-bg);
+    color: var(--text-primary);
+    border-right: 1px solid var(--border-color);
+}
+
+.memory-panel:not(.open){
+    width:0;
+    padding:0;
+    border:none;
+    margin:0;
+}
+
+.memory-panel.open{
+    left:260px;
+}
+
+.memory-panel.open {
+  transform: translateX(0);
+}
+
+.memory-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:24px;
+}
+
+.memory-header h2 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.memory-header button{
+    width:36px;
+    height:36px;
+    border:none;
+    border-radius:50%;
+    background:var(--button-bg);
+    color:var(--text-primary);
+    cursor:pointer;
+    transition:.2s;
+}
+
+.memory-header button:hover{
+   background:var(--button-hover);
+}
+
+.memory-card{
+    width:100%;
+    margin:0 0 18px 0;
+    padding:18px;
+    border-radius:16px;
+    box-sizing:border-box;
+    margin-bottom:22px;
+    background: var(--card-bg);
+    border:1px solid var(--border-color);
+    color:var(--text-primary);
+}
+
+
+.memory-card strong {
+  display: block;
+  margin-bottom: 8px;
+  color:var(--text-primary);
+  text-transform: capitalize;
+}
+
+.memory-card p {
+  margin: 0;
+  font-size: 16px;
+  color:var(--text-secondary);
+}
+
+.memory-card input {
+  width: 100%;
+  padding: 8px;
+  margin-top: 6px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  background:var(--input-bg);
+  color:var(--text-primary);
+  border:1px solid var(--border-color);
+}
+
+.memory-card button {
+  cursor: pointer;
+}
+
+.memory-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.memory-actions button {
+  border: none;
+  background:var(--button-bg);
+  color:var(--text-primary);
+  padding: 8px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.memory-actions button:hover {
+  background: #e5e7eb;
+}
+
+.clear-memory{
+    margin:20px;
+    padding:14px;
+    border:none;
+    border-radius:12px;
+    font-weight:600;
+    cursor:pointer;
+}
+
+
+.clear-memory:hover {
+  background: #dc2626;
+}

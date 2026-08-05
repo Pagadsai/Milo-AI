@@ -8,6 +8,7 @@ import {
   FiX,
   FiSearch,
   FiArchive,
+  FiDatabase,
 } from "react-icons/fi";
 import { FaThumbtack } from "react-icons/fa6";
 export default function Sidebar({
@@ -21,6 +22,7 @@ export default function Sidebar({
   onRename,
   onPin,
   onArchive,
+  onMemory,
 }) {
   const [editingId, setEditingId] = useState(null);
   const [title, setTitle] = useState("");
@@ -233,6 +235,14 @@ export default function Sidebar({
           ))}
         </nav>
         <hr className="sidebar-divider" />
+        <button
+          className="archive-toggle"
+          onClick={onMemory}
+        >
+          <FiDatabase />
+          <span>Memory</span>
+        </button>
+
         <button
           className="archive-toggle"
           onClick={() => setShowArchived(!showArchived)}

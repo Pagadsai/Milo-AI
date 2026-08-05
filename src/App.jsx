@@ -10,6 +10,7 @@ import "./App.css";
 import DidYouKnow from "./components/DidYouKnow";
 import { generateChatTitle } from "./services/chatTitle";
 import CameraPanel from "./components/CameraPanel";
+import MemoryPanel from "./components/MemoryPanel";
 import ChatWindow from "./components/ChatWindow";
 import Sidebar from "./components/Sidebar";
 import { speak } from "./services/milo";
@@ -99,6 +100,8 @@ export default function App() {
     useState(true);
   const [showWelcome, setShowWelcome] =
     useState(true);
+  const [showMemory, setShowMemory] =
+    useState(false);
   const activeChat = useMemo(
     () =>
       chats.find(
@@ -601,6 +604,11 @@ Return ONLY the corrected sentence.`,
           onRename={renameChat}
           onPin={pinChat}
           onArchive={archiveChat}
+          onMemory={() => setShowMemory(true)}
+        />
+        <MemoryPanel
+            isOpen={showMemory}
+            onClose={() => setShowMemory(false)}
         />
 
         <main className="workspace">
