@@ -1682,3 +1682,6 @@ body[data-theme="light"] .sign-output-heading button:hover svg{
     color:#bfc8d4;
     border:1px solid #3e4b60;
 }
+.archive-toggle + .archive-toggle{
+    margin-top:6px;
+}

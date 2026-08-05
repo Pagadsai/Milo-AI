@@ -40,6 +40,7 @@
     background: var(--panel-bg);
     color: var(--text-primary);
     border-right: 1px solid var(--border-color);
+    margin-left: 8px;
 }
 
 .memory-panel:not(.open){

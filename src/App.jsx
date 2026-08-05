@@ -344,9 +344,9 @@ async function sendMessage(rawText, image) {
         : null,
     file: image
       ? {
-          name: image.name,
-          type: image.type,
-          size: image.size,
+          name : image.name,
+          type : image.type,
+          size : image.size,
         }
       : null,
   };

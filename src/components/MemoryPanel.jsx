@@ -42,6 +42,11 @@ export default function MemoryPanel({
   }
 
   function handleClear() {
+    const confirmed = window.confirm(
+      "Are you sure you want to delete all memories?\n\nThis action cannot be undone."
+    );
+    if (!confirmed) return;
+
     clearMemory();
     setMemory({});
   }
