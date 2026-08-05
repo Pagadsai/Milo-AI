@@ -1,5 +1,5 @@
 const API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY;
-
+import { loadMemory } from "./memory";
 const API_URL = "https://openrouter.ai/api/v1/chat/completions";
 
 export async function generateResponse(
@@ -53,6 +53,11 @@ export async function generateResponse(
           )
           .join("\n\n----------------------\n\n");
     }
+    const memory = loadMemory();
+    const memoryContext =
+    Object.keys(memory).length > 0
+    ? JSON.stringify(memory, null, 2)
+    : "No long-term memory available.";
     console.log("===== DOCUMENT CONTEXT =====");
     console.log(documentContext);
     console.log("============================");
@@ -70,6 +75,7 @@ export async function generateResponse(
             role: "system",
             content: `
         You are Milo, an intelligent AI tutor.
+        ${memoryContext}
 
         Your highest priority is factual accuracy.
 
@@ -108,12 +114,33 @@ export async function generateResponse(
 
         ${documentContext}
 
+        User Profile (always treat these as facts):
+
+        ${memoryContext}
+
+        Important:
+        - If "name" exists, that is the user's name.
+        - If "city" exists, that is where the user lives.
+        - If "learning" exists, that is what the user is currently learning.
+        - If "favoriteLanguage" exists, that is the user's favorite programming language.
+        - Never ignore these facts.
+        - When the user asks about themselves, answer from this profile.
+
         Rules for uploaded documents:
 
         - If uploaded documents are available, use them as your primary source.
         - Answer questions using the uploaded document whenever possible.
         - If the answer is not found in the uploaded document, use your general knowledge or web results.
         - Never invent information that is not present in the uploaded document.
+
+        Rules for long-term memory:
+
+        - The Long-Term User Memory contains facts the user has shared in previous conversations.
+        - Use these facts naturally when answering.
+        - Never say you remembered from storage.
+        - If the user asks "What is my name?", answer using Long-Term User Memory.
+        - If the memory contains the user's city, interests, profession, preferences or goals, use them whenever relevant.
+        - If Long-Term User Memory is empty, do not invent anything.
         `,
           },
           ...formattedMessages,
@@ -149,6 +176,16 @@ export async function generateStreamingResponse(
   onToken
 ) {
   try {
+    const memory = loadMemory();
+    const memoryContext = Object.keys(memory).length
+      ? `
+    User Memory:
+    ${JSON.stringify(memory, null, 2)}
+    Use this information whenever it is relevant.
+    If the user asks about themselves, answer using this memory.
+    Never say you don't know if the information exists here.
+    `
+      : "";
     const formattedMessages = conversation.map((msg, index) => {
       const isLastUser =
         msg.sender === "user" &&
@@ -214,6 +251,7 @@ ${doc.text}
             role: "system",
             content: `
 You are Milo, an intelligent AI tutor.
+${memoryContext}
 
 Your highest priority is factual accuracy.
 

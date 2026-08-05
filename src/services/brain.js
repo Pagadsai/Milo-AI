@@ -6,7 +6,8 @@ import {
   streamingGeneralAgent,
 } from "./generalAgent";
 import { companyAgent } from "./companyAgent";
-
+import { extractMemory } from "./memoryExtractor";
+import { updateMemory } from "./memory";
 import {
   buildConversationMemory,
   getLatestQuestion,
@@ -15,22 +16,27 @@ import {
 
 export async function askMilo(chat, image = null) {
   const conversation = chat.messages;
+  const lastUser = [...conversation]
+    .reverse()
+    .find(msg => msg.sender === "user");
 
+  if (lastUser) {
+    const memory = await extractMemory(lastUser.text);
+    console.log("Extracted Memory:", memory);
+    if (memory && Object.keys(memory).length > 0) {
+        updateMemory(memory);
+        console.log("Memory Saved:", memory);
+    }
+  }
   const memory = buildConversationMemory(conversation);
-
   const latestQuestion = getLatestQuestion(conversation);
   const previousTopic = getPreviousTopic(conversation);
-
   console.log("Latest Question:", latestQuestion);
   console.log("Previous Topic:", previousTopic);
-
   const intent = await detectIntent(latestQuestion);
-
   const teaching = isTeachingRequest(latestQuestion);
-
   console.log("Intent:", intent);
   console.log("Teaching Mode:", teaching);
-
   if (teaching) {
     return await generalAgent(chat, image);
   }
@@ -49,6 +55,18 @@ export async function askMiloStreaming(
   onToken
 ) {
   const conversation = chat.messages;
+  const lastUser = [...conversation]
+    .reverse()
+    .find(msg => msg.sender === "user");
+    
+  if (lastUser) {
+    const memory = extractMemory(lastUser.text);
+
+    if (Object.keys(memory).length > 0) {
+      updateMemory(memory);
+      console.log("Memory Saved:", memory);
+    }
+  }
   const latestQuestion = getLatestQuestion(conversation);
   const intent = await detectIntent(latestQuestion);
   const teaching = isTeachingRequest(latestQuestion);

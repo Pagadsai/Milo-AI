@@ -1,59 +1,63 @@
-export function buildConversationMemory(messages) {
-  return messages
-    .slice(-15)
-    .map((msg) => ({
-      role: msg.sender === "user" ? "user" : "assistant",
-      content: msg.text,
-    }));
+const MEMORY_KEY = "milo_memory";
+
+export function loadMemory() {
+  const saved = localStorage.getItem(MEMORY_KEY);
+
+  if (!saved) {
+    return {};
+  }
+
+  try {
+    return JSON.parse(saved);
+  } catch {
+    return {};
+  }
 }
 
-export function getRecentMessages(messages, count = 6) {
-  return messages.slice(-count);
+export function saveMemory(memory) {
+  localStorage.setItem(
+    MEMORY_KEY,
+    JSON.stringify(memory)
+  );
 }
 
-export function getLatestQuestion(messages) {
-  const userMessages = messages.filter(
-    (m) => m.sender === "user"
-  );
-  if (!userMessages.length) {
-    return "";
-  }
-  return userMessages[userMessages.length - 1].text;
+export function updateMemory(newData) {
+  const current = loadMemory();
+
+  const updated = {
+    ...current,
+    ...newData,
+  };
+
+  saveMemory(updated);
+
+  return updated;
 }
 
-export function getPreviousTopic(messages) {
-  const userMessages = messages.filter(
-    (m) => m.sender === "user"
-  );
-  if (userMessages.length < 2) {
-    return "";
-  }
-  return userMessages[userMessages.length - 2].text;
+export function clearMemory() {
+  localStorage.removeItem(MEMORY_KEY);
+}
+export function getLatestQuestion(conversation) {
+  const lastUser = [...conversation]
+    .reverse()
+    .find(msg => msg.sender === "user");
+
+  return lastUser?.text || "";
 }
 
-export function getLastAssistantReply(messages) {
-  const assistantMessages = messages.filter(
-    (m) => m.sender === "milo"
-  );
-  if (!assistantMessages.length) {
-    return "";
-  }
-  return assistantMessages[assistantMessages.length - 1].text;
+export function getPreviousTopic(conversation) {
+  if (conversation.length < 2) return "";
+
+  const previous = [...conversation]
+    .reverse()
+    .find(msg => msg.sender === "assistant");
+
+  return previous?.text || "";
 }
-export function getLastUserMessage(messages) {
-  const userMessages = messages.filter(
-    (m) => m.sender === "user"
-  );
-  if (!userMessages.length) {
-    return "";
-  }
-  return userMessages[userMessages.length - 1].text;
-}
-export function getCurrentTopic(messages) {
-  const last = getLastUserMessage(messages);
-  if (!last) return "";
-  return last
-    .replace(/[?.!,]/g, "")
-    .trim()
-    .toLowerCase();
+
+export function buildConversationMemory(conversation) {
+  return conversation
+    .slice(-10)
+    .map(msg => `${msg.sender}: ${msg.text}`)
+    .join("\n");
 }
