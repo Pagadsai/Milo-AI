@@ -45,25 +45,18 @@ export async function extractDocumentText(file) {
 
 async function extractPDF(file) {
   const buffer = await file.arrayBuffer();
-
   const pdf = await pdfjsLib.getDocument({
     data: buffer,
   }).promise;
-
   let output = "";
-
   for (let page = 1; page <= pdf.numPages; page++) {
     const p = await pdf.getPage(page);
-
     const content = await p.getTextContent();
-
     output += `\n\n===== PAGE ${page} =====\n\n`;
-
     output += content.items
       .map((item) => item.str)
       .join(" ");
   }
-
   return output;
 }
 
@@ -71,11 +64,9 @@ async function extractPDF(file) {
 
 async function extractDOCX(file) {
   const buffer = await file.arrayBuffer();
-
   const result = await mammoth.extractRawText({
     arrayBuffer: buffer,
   });
-
   return result.value;
 }
 
@@ -83,9 +74,7 @@ async function extractDOCX(file) {
 
 async function extractPPTX(file) {
   const buffer = await file.arrayBuffer();
-
   const zip = await JSZip.loadAsync(buffer);
-
   const slideNames = Object.keys(zip.files)
     .filter((name) =>
       /^ppt\/slides\/slide\d+\.xml$/.test(name)
@@ -97,12 +86,9 @@ async function extractPPTX(file) {
     });
 
   let output = "";
-
   for (let i = 0; i < slideNames.length; i++) {
     const xml = await zip.file(slideNames[i]).async("text");
-
     const matches = [...xml.matchAll(/<a:t>(.*?)<\/a:t>/g)];
-
     const slideText = matches
       .map((m) =>
         m[1]
@@ -113,10 +99,8 @@ async function extractPPTX(file) {
       .join(" ");
 
     output += `\n\n===== SLIDE ${i + 1} =====\n\n`;
-
     output += slideText;
   }
-
   return output;
 }
 
@@ -124,7 +108,6 @@ async function extractPPTX(file) {
 
 async function extractExcel(file) {
   const buffer = await file.arrayBuffer();
-
   const workbook = XLSX.read(buffer, {
     type: "array",
   });
@@ -132,9 +115,7 @@ async function extractExcel(file) {
   let output = "";
   workbook.SheetNames.forEach((sheetName) => {
     output += `\n\n===== SHEET: ${sheetName} =====\n\n`;
-
     const sheet = workbook.Sheets[sheetName];
-
     const rows = XLSX.utils.sheet_to_json(sheet, {
       header: 1,
       blankrows: false,
