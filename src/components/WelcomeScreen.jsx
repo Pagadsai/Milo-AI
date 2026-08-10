@@ -1,38 +1,51 @@
-import { useEffect,useState } from "react";
+import { useEffect, useState } from "react";
 import "./WelcomeScreen.css";
 import rabbit from "../assets/rabbit-logo.png";
+
 export default function WelcomeScreen({ onFinish }) {
   const [progress, setProgress] = useState(0);
   const [status, setStatus] = useState("Loading conversations...");
+
   useEffect(() => {
-    let value = 0;
-    const interval = setInterval(() => {
-      value += 1;
+    const duration = 2000;
+    const startTime = Date.now();
+    const endTime = startTime + duration;
+    let timer;
+    function update() {
+      const now = Date.now();
+      const elapsed = now - startTime;
+
+      if (now >= endTime) {
+        setProgress(100);
+        setStatus("Ready!");
+        timer = setTimeout(() => {
+          onFinish();
+        }, 300);
+
+        return;
+      }
+
+      const value = (elapsed / duration) * 100;
+      setProgress(value);
+
       if (value <= 25) {
         setStatus("Loading conversations...");
-        setProgress(value);
-      }
-      else if (value <= 55) {
+      } else if (value <= 55) {
         setStatus("Connecting AI...");
-        setProgress(value);
-      }
-      else if (value <= 85) {
+      } else if (value <= 85) {
         setStatus("Preparing sign recognition...");
-        setProgress(value);
+      } else {
+        setStatus("Ready!");
       }
-      else if (value < 100) {
-       setStatus("Ready!");
-       setProgress(value);
-      }
-      if (value >= 100) {
-        clearInterval(interval);
-        setTimeout(() => {
-         onFinish();
-        }, 300);
-      }
-    }, 20);
-    return () => clearInterval(interval);
-  }, []);
+
+      timer = setTimeout(update, 50);
+    }
+
+    update();
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [onFinish]);
 
   return (
     <div className="welcome-screen">
@@ -59,7 +72,6 @@ export default function WelcomeScreen({ onFinish }) {
         </div>
 
         <div className="grass"></div>
-
       </div>
 
       <h1 className="logo">
