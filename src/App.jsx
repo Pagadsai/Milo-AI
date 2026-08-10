@@ -232,7 +232,7 @@ export default function App() {
       setDeletedChat(null);
       setShowUndo(false);
   }
-
+  
   function renameChat(chatId, title) {
     const cleanTitle =
       title.trim();

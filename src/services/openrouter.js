@@ -275,43 +275,31 @@ ${documentContext}
         ],
       }),
     });
-
     if (!response.ok) {
       throw new Error("Streaming request failed");
     }
-
     const reader = response.body.getReader();
     const decoder = new TextDecoder();
-
     let fullText = "";
-
     while (true) {
       const { value, done } = await reader.read();
-
       if (done) break;
-
       const chunk = decoder.decode(value);
-
       const lines = chunk.split("\n");
 
       for (const line of lines) {
         if (!line.startsWith("data: ")) continue;
-
         const data = line.replace("data: ", "").trim();
-
         if (data === "[DONE]") {
           return fullText;
         }
-
         try {
           const json = JSON.parse(data);
-
           const token =
             json?.choices?.[0]?.delta?.content || "";
 
           if (token) {
             fullText += token;
-
             onToken(fullText);
           }
         } catch {

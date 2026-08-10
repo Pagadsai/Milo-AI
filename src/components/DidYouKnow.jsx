@@ -68,7 +68,7 @@ export default function DidYouKnow() {
 
             setIndex((prev) => (prev + 1) % facts.length);
 
-        }, 15000);
+        }, 10000);
 
         return () => clearInterval(timer);
 
