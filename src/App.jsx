@@ -19,6 +19,21 @@ import { generateResponse } from "./services/openrouter";
 import { extractDocumentText } from "./services/documentParser";
 import { FiPlus } from "react-icons/fi";
 
+const SESSION_START_KEY = "milo_session_start";
+
+function getSessionStart() {
+  const saved = localStorage.getItem(SESSION_START_KEY);
+  if (saved) {
+    return Number(saved);
+  }
+  const start = Date.now();
+  localStorage.setItem(
+    SESSION_START_KEY,
+    String(start)
+  );
+  return start;
+}
+
 const STORAGE_KEY = "milo_chats_v2";
 
 function makeId() {
@@ -71,9 +86,36 @@ function loadChats() {
     const saved = JSON.parse(
       localStorage.getItem(STORAGE_KEY) || "null"
     );
-    return Array.isArray(saved) && saved.length
-      ? saved
-      : [createChat()];
+
+    if (!Array.isArray(saved) || !saved.length) {
+      return [createChat()];
+    }
+
+    return saved.map((chat) => {
+      const existingSessionStart =
+        chat.stats?.sessionStart;
+
+      if (existingSessionStart) {
+        return chat;
+      }
+
+      const firstMessageTime =
+        chat.messages?.[0]?.timestamp
+          ? new Date(chat.messages[0].timestamp).getTime()
+          : Date.now();
+
+      return {
+        ...chat,
+        stats: {
+          messagesSent: 0,
+          aiReplies: 0,
+          signsDetected: 0,
+          sentencesBuilt: 0,
+          ...chat.stats,
+          sessionStart: firstMessageTime,
+        },
+      };
+    });
   } catch {
     return [createChat()];
   }
@@ -81,9 +123,21 @@ function loadChats() {
 
 export default function App() {
   const [chats, setChats] = useState(loadChats);
-  const [activeId, setActiveId] = useState(
-    () => loadChats()[0].id
-  );
+  const [activeId, setActiveId] = useState(() => {
+    const savedChats = loadChats();
+    const savedActiveId =
+      localStorage.getItem("milo_active_chat");
+
+    if (
+      savedActiveId &&
+      savedChats.some(
+        (chat) => chat.id === savedActiveId
+      )
+    ) {
+      return savedActiveId;
+    }
+    return savedChats[0].id;
+  });
   const [theme, setTheme] = useState(() => {
     return localStorage.getItem("theme") || "light";
   });
@@ -111,18 +165,17 @@ export default function App() {
   );
 
   useEffect(() => {
-    const chatsToSave = chats.filter((chat) =>
-      chat.messages.some(
-        (message) =>
-          message.sender === "user"
-      )
-    );
-
     localStorage.setItem(
       STORAGE_KEY,
-      JSON.stringify(chatsToSave)
+      JSON.stringify(chats)
     );
   }, [chats]);
+
+  useEffect(() => {
+    if (activeId) {
+      localStorage.setItem("milo_active_chat", activeId);
+    }
+  }, [activeId]);
 
   useEffect(() => {
     const params = new URLSearchParams(
@@ -140,37 +193,6 @@ export default function App() {
     }
   }, []);
 
-  useEffect(() => {
-    const sessionStarted =
-      sessionStorage.getItem(
-        "milo_session"
-      );
-
-    if (!sessionStarted) {
-      sessionStorage.setItem(
-        "milo_session",
-        "true"
-      );
-
-      const latestChat = chats[0];
-
-      if (
-        latestChat &&
-        latestChat.messages.length > 1
-      ) {
-        const chat = createChat();
-
-        setChats((current) => [
-          chat,
-          ...current,
-        ]);
-
-        setActiveId(chat.id);
-      } else if (latestChat) {
-        setActiveId(latestChat.id);
-      }
-    }
-  }, []);
   useEffect(() => {
     document.body.setAttribute("data-theme", theme);
     localStorage.setItem("theme", theme);
@@ -225,6 +247,7 @@ export default function App() {
       if (!deletedChat) return;
       clearTimeout(undoTimer.current);
       setChats(current => [
+
           deletedChat,
           ...current
       ]);
@@ -257,6 +280,7 @@ export default function App() {
       )
     );
   }
+
   function archiveChat(chatId) {
     setChats((current) =>
       current.map((chat) =>
@@ -326,13 +350,10 @@ export default function App() {
 async function sendMessage(rawText, image) {
   const text = rawText.trim();
   const targetChatId = activeChat.id;
-
   const currentChat = chats.find(
     (chat) => chat.id === targetChatId
   );
-
   if (!text || currentChat?.isThinking) return;
-
   const userMessage = {
     id: makeId(),
     sender: "user",

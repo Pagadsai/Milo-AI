@@ -312,7 +312,7 @@ export default function CameraPanel({
             : "Off"}
         </span>
       </div>
-
+      
       <div className={`camera-stage ${isLive ? "live" : ""}`}>
         <video ref={videoRef} playsInline muted />
         <canvas ref={canvasRef} />
