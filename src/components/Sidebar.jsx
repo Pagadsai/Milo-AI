@@ -48,8 +48,18 @@ export default function Sidebar({
       chat.title.toLowerCase().includes(search.toLowerCase())
     )
     .sort((a, b) => {
-      if (a.pinned === b.pinned) return 0;
-      return a.pinned ? -1 : 1;
+      if (a.pinned !== b.pinned) {
+        return a.pinned ? -1 : 1;
+      }
+      const aTime = new Date(
+        a.messages?.[a.messages.length - 1]?.timestamp || 0
+      ).getTime();
+
+      const bTime = new Date(
+        b.messages?.[b.messages.length - 1]?.timestamp || 0
+      ).getTime();
+
+      return bTime - aTime;
     });
 
   function handleSearch(value) {
