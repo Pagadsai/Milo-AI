@@ -48,10 +48,25 @@ export default function CameraPanel({
       } else if (seconds < 3600) {
         const mins = Math.floor(seconds / 60);
         setSessionTime(`${mins} min`);
-      } else {
+      } else if (seconds < 86400) {
         const hrs = Math.floor(seconds / 3600);
         const mins = Math.floor((seconds % 3600) / 60);
-        setSessionTime(`${hrs} hr ${mins} min`);
+
+        setSessionTime(
+          mins > 0
+            ? `${hrs} hr ${mins} min`
+            : `${hrs} hr`
+        );
+      } else {
+        const days = Math.floor(seconds / 86400);
+        const hrs = Math.floor((seconds % 86400) / 3600);
+        const mins = Math.floor((seconds % 3600) / 60);
+
+        setSessionTime(
+          hrs > 0
+            ? `${days}d ${hrs}h ${mins}m`
+            : `${days}d ${mins}m`
+        );
       }
     };
 
